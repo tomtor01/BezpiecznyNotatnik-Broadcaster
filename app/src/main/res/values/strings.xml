@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BezpiecznyNotatnik</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="submit">Submit</string>
+    <string name="message">Message</string>
+    <string name="update_message">Update Message</string>
+    <string name="change_password">Change Password</string>
+    <string name="new_password">New Password</string>
+    <string name="save">Save</string>
+    <string name="login">Login</string>
+</resources>
