@@ -8,8 +8,8 @@
     <EditText
         android:id="@+id/passwordInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Password"
+        android:layout_height="48dp"
+        android:hint="@string/enter_password"
         android:inputType="textPassword"
         android:layout_marginBottom="16dp" />
 
@@ -17,6 +17,6 @@
         android:id="@+id/submitButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login" />
+        android:text="@string/login" />
 
 </LinearLayout>

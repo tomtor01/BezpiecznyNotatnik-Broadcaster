@@ -24,28 +24,29 @@
         android:id="@+id/messageInput"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Enter Your Message"
+        android:hint="@string/enter_your_message"
         android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/saveMessageButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Message" />
+        android:text="@string/save_message" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout"
+        android:text="@string/logout"
         android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/messageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Message will appear here."
+        android:text="@string/no_message_saved_yet"
         android:textSize="18sp"
-        android:visibility="visible" />
+        android:padding="8dp"
+        android:layout_marginBottom="16dp" />
 
 </LinearLayout>

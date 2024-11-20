@@ -1,6 +1,6 @@
 package com.example.bezpiecznynotatnik
 
-import android.content.Context
+
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -9,13 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
-import java.security.KeyStore
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
-import javax.crypto.spec.GCMParameterSpec
+import android.util.Log
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,38 +21,64 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize views and SharedPreferences
         passwordInput = findViewById(R.id.passwordInput)
         submitButton = findViewById(R.id.submitButton)
         sharedPrefs = getSharedPreferences("SecureNotesPrefs", MODE_PRIVATE)
 
-        // Check if a password exists
-        val savedPassword = sharedPrefs.getString("password", null)
+        val encryptedHashBase64 = sharedPrefs.getString("passwordHash", null)
+        val ivBase64 = sharedPrefs.getString("iv", null)
 
-        if (savedPassword == null) {
-            // Redirect to password setup if no password is set
-            Toast.makeText(this, "No password found. Please set one first.", Toast.LENGTH_SHORT).show()
+        if (encryptedHashBase64 == null || ivBase64 == null) {
+            // No password is set, redirect to PasswordSetupActivity
+            Log.d("SecureNotes", "No password found. Redirecting to setup.")
             val intent = Intent(this, PasswordSetupActivity::class.java)
             startActivity(intent)
-            finish() // Close this activity so the user can't return without setting a password
+            finish()
+            return
         }
 
-        // Login Button Listener
+        Log.d("SecureNotes", "Encrypted Hash: $encryptedHashBase64")
+        Log.d("SecureNotes", "IV: $ivBase64")
+
         submitButton.setOnClickListener {
             val enteredPassword = passwordInput.text.toString()
-            if (enteredPassword == savedPassword) {
-                // Navigate to SecondActivity if the password is correct
-                val intent = Intent(this, SecondActivity::class.java)
+
+            // Validate entered password
+            if (enteredPassword.isEmpty()) {
+                Toast.makeText(this, "Please enter a password.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val hashedPassword = HashUtil.hashPassword(enteredPassword)
+
+            try {
+                // Decode Base64 strings to byte arrays
+                val storedEncryptedHash = ByteArrayUtil.fromBase64(encryptedHashBase64)
+                val storedIv = ByteArrayUtil.fromBase64(ivBase64)
+
+                // Decrypt stored hash and compare it with entered password hash
+                val decryptedHash = EncryptionUtil.decryptHash(storedIv, storedEncryptedHash)
+                if (hashedPassword.contentEquals(decryptedHash)) {
+                    Log.d("SecureNotes", "Password matched. Redirecting to second screen.")
+                    val intent = Intent(this, AccessActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "Incorrect password!", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("SecureNotes", "Error during password validation: ${e.message}")
+                Toast.makeText(this, "An error occurred. Please reset your password.", Toast.LENGTH_LONG).show()
+                // Optionally redirect to setup in case of corruption
+                val intent = Intent(this, PasswordSetupActivity::class.java)
                 startActivity(intent)
                 finish()
-            } else {
-                Toast.makeText(this, "Incorrect Password!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 }
 
-class SecondActivity : AppCompatActivity() {
+class AccessActivity : AppCompatActivity() {
     private lateinit var newPasswordInput: EditText
     private lateinit var changePasswordButton: Button
     private lateinit var messageInput: EditText
@@ -71,50 +91,51 @@ class SecondActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_access)
 
-        // Initialize views and SharedPreferences
         newPasswordInput = findViewById(R.id.newPasswordInput)
-        messageView = findViewById(R.id.messageView)
         changePasswordButton = findViewById(R.id.changePasswordButton)
         messageInput = findViewById(R.id.messageInput)
+        messageView = findViewById(R.id.messageView)
         saveMessageButton = findViewById(R.id.saveMessageButton)
         logoutButton = findViewById(R.id.logoutButton)
         sharedPrefs = getSharedPreferences("SecureNotesPrefs", MODE_PRIVATE)
 
-        showMessage()
-
-        // Change Password Button Listener
         changePasswordButton.setOnClickListener {
             val newPassword = newPasswordInput.text.toString()
             if (newPassword.isNotEmpty()) {
-                sharedPrefs.edit().putString("password", newPassword).apply()
+                val passwordHash = HashUtil.hashPassword(newPassword)
+                val (iv, encryptedHash) = EncryptionUtil.encryptHash(passwordHash)
+
+                sharedPrefs.edit()
+                    .putString("passwordHash", ByteArrayUtil.toBase64(encryptedHash))
+                    .putString("iv", ByteArrayUtil.toBase64(iv))
+                    .apply()
+
                 Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Password cannot be empty!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Save Message Button Listener
+        val savedMessage = sharedPrefs.getString("savedMessage", "")
+        messageView.text = savedMessage ?: "No message saved yet."
+
+        // Save message functionality
         saveMessageButton.setOnClickListener {
-            val message = messageInput.text.toString()
-            sharedPrefs.edit().putString("message", message).apply()
-            Toast.makeText(this, "Message saved successfully!", Toast.LENGTH_SHORT).show()
-            showMessage()
+            val newMessage = messageInput.text.toString()
+            if (newMessage.isNotEmpty()) {
+                sharedPrefs.edit().putString("savedMessage", newMessage).apply()
+                messageView.text = newMessage
+                Toast.makeText(this, "Message saved successfully!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Message cannot be empty!", Toast.LENGTH_SHORT).show()
+            }
         }
 
-
-        // Logout Button Listener
         logoutButton.setOnClickListener {
-            // Clear sensitive session data if needed (optional)
-            // Navigate back to MainActivity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            finish() // Close this activity
+            finish()
         }
-    }
-
-    private fun showMessage() {
-        val message = sharedPrefs.getString("message", "No message saved.")
-        messageView.text = message
     }
 }
 
@@ -136,11 +157,16 @@ class PasswordSetupActivity : AppCompatActivity() {
         setPasswordButton.setOnClickListener {
             val newPassword = newPasswordInput.text.toString()
             if (newPassword.isNotEmpty()) {
-                // Save the new password
-                sharedPrefs.edit().putString("password", newPassword).apply()
+                val passwordHash = HashUtil.hashPassword(newPassword)
+                val (iv, encryptedHash) = EncryptionUtil.encryptHash(passwordHash)
+
+                sharedPrefs.edit()
+                    .putString("passwordHash", ByteArrayUtil.toBase64(encryptedHash))
+                    .putString("iv", ByteArrayUtil.toBase64(iv))
+                    .apply()
+
                 Toast.makeText(this, "Password set successfully!", Toast.LENGTH_SHORT).show()
 
-                // Redirect to MainActivity
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
