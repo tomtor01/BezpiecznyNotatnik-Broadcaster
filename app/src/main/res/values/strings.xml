@@ -2,7 +2,7 @@
     <string name="app_name">Bezpieczny notatnik</string>
     <string name="enter_password">Enter Password</string>
     <string name="enter_new_password">Enter New Password</string>
-    <string name="login">Login</string>
+    <string name="login">Log in</string>
     <string name="enter_your_message">Enter Your Message</string>
     <string name="save_message">Save Message</string>
     <string name="logout">Logout</string>

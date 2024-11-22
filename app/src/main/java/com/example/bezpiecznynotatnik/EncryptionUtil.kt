@@ -4,12 +4,14 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import java.security.KeyStore
+import java.security.MessageDigest
+import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import java.security.MessageDigest
 import javax.crypto.spec.IvParameterSpec
+
 
 object EncryptionUtil {
     private const val KEYSTORE_ALIAS = "SecureNotesKeyAlias"
@@ -56,17 +58,17 @@ object MessageEncryptionUtil {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val TRANSFORMATION = "AES/CBC/PKCS7Padding"
 
-    // Get or generate a symmetric key
+
     private fun getOrCreateKey(): SecretKey {
-        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
+        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)   // ładowanie klucza symetrycznego
         keyStore.load(null)
 
-        // Check if key already exists
+        // sprawdzanie czy istnieje juz klucz
         keyStore.getKey(KEY_ALIAS, null)?.let {
             return it as SecretKey
         }
 
-        // Generate a new key if it doesn't exist
+        // Generowanie nowego klucza jesli jeszcze nie istnieje
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
         keyGenerator.init(
             KeyGenParameterSpec.Builder(
@@ -80,7 +82,6 @@ object MessageEncryptionUtil {
         return keyGenerator.generateKey()
     }
 
-    // Encrypt the message
     fun encryptMessage(message: String): Pair<ByteArray, ByteArray> {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey())
@@ -89,7 +90,6 @@ object MessageEncryptionUtil {
         return Pair(encryptedMessage, iv)
     }
 
-    // Decrypt the message
     fun decryptMessage(encryptedMessage: ByteArray, iv: ByteArray): String {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), IvParameterSpec(iv))
@@ -97,11 +97,18 @@ object MessageEncryptionUtil {
     }
 }
 
-
+object SaltUtil {
+    fun generateSalt(): ByteArray {
+        val salt = ByteArray(16) // 16 bytes = 128-bit salt
+        SecureRandom().nextBytes(salt)
+        return salt
+    }
+}
 object HashUtil {
-    fun hashPassword(password: String): ByteArray {
+    fun hashPassword(password: String, salt: ByteArray): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
-        return digest.digest(password.toByteArray())
+        val saltedPassword = salt + password.toByteArray()
+        return digest.digest(saltedPassword)
     }
 }
 
