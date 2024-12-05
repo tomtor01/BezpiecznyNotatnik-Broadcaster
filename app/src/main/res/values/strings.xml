@@ -2,10 +2,11 @@
     <string name="app_name">Bezpieczny notatnik</string>
     <string name="enter_password">Enter Password</string>
     <string name="enter_new_password">Enter New Password</string>
-    <string name="login">Log in</string>
-    <string name="enter_your_message">Enter Your Message</string>
-    <string name="save_message">Save Message</string>
-    <string name="logout">Logout</string>
-    <string name="no_message_saved_yet">No message saved yet.</string>
+    <string name="login">Potwierdź tożsamość</string>
+    <string name="enter_your_message">Wpisz tekst</string>
+    <string name="save_message">Zapisz notatkę</string>
+    <string name="delete_message">Usuń notatkę</string>
+    <string name="logout">Wyjście</string>
+    <string name="no_message_saved_yet">Brak notatek</string>
     <string name="set_password">Set Password</string>
 </resources>

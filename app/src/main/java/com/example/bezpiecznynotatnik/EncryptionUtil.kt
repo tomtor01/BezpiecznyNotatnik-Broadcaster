@@ -3,6 +3,7 @@ package com.example.bezpiecznynotatnik
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -11,9 +12,10 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
+import androidx.biometric.BiometricPrompt
 
 
-object EncryptionUtil {
+object PasswordEncryptionUtil {
     private const val KEYSTORE_ALIAS = "SecureNotesKeyAlias"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val TRANSFORMATION = "AES/GCM/NoPadding"
@@ -52,6 +54,56 @@ object EncryptionUtil {
         return cipher.doFinal(encryptedHash)
     }
 }
+
+object BiometricsUtil {
+    private const val TRANSFORMATION = "AES/CBC/PKCS7Padding"
+    private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+    private const val KEY_NAME = "biometric_key"
+
+    // Generowanie klucza
+    private fun generateSecretKey() {
+        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+        if (!keyStore.containsAlias(KEY_NAME)) {
+            val keyGen = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
+            keyGen.init(
+                KeyGenParameterSpec.Builder(
+                    KEY_NAME,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                )
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                    .setUserAuthenticationRequired(true) // Biometryczne uwierzytelnianie
+                    .setInvalidatedByBiometricEnrollment(true) // Klucz pozostaje nieważny po zmianie odcisku
+                    .build()
+            )
+            keyGen.generateKey()
+        }
+    }
+
+    // Inicjalizacja Cipher
+    private fun getCipher(): Cipher {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+        val secretKey = keyStore.getKey(KEY_NAME, null) as SecretKey
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        return cipher
+    }
+
+    // Tworzenie obiektu CryptoObject
+    fun getCryptoObject(): BiometricPrompt.CryptoObject? {
+        return try {
+            generateSecretKey() // Tworzenie klucza, jeśli nie istnieje
+            val cipher = getCipher()
+            BiometricPrompt.CryptoObject(cipher)
+        } catch (e: Exception) {
+            Log.e("BiometricsUtil", "Error initializing CryptoObject: ${e.message}")
+            null
+        }
+    }
+}
+
+
+
 
 object MessageEncryptionUtil {
     private const val KEY_ALIAS = "MessageEncryptionKey"

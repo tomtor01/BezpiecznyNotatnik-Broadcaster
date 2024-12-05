@@ -9,9 +9,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import javax.crypto.Cipher
+
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var passwordInput: EditText
     private lateinit var submitButton: Button
     private lateinit var sharedPrefs: SharedPreferences
 
@@ -19,113 +23,59 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        passwordInput = findViewById(R.id.passwordInput)
         submitButton = findViewById(R.id.submitButton)
         sharedPrefs = getSharedPreferences("SecureNotesPrefs", MODE_PRIVATE)
 
-        // sprawdzanie czy hasło juz istnieje
-        val encryptedHashBase64 = sharedPrefs.getString("passwordHash", null)
-        val ivBase64 = sharedPrefs.getString("iv", null)
-        val saltBase64 = sharedPrefs.getString("password_salt", null)
-
-        if (encryptedHashBase64 == null || ivBase64 == null || saltBase64 == null) {
-            // redirect to PasswordSetupActivity
-            Log.d("SecureNotes", "No password found. Redirecting to setup.")
-            val intent = Intent(this, PasswordSetupActivity::class.java)
-            startActivity(intent)
+        // Sprawdzenie dostępności biometrii
+        val biometricManager = BiometricManager.from(this)
+        if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
+            Toast.makeText(this, "Biometric authentication is not available", Toast.LENGTH_LONG).show()
             finish()
-            return
         }
-
-        Log.d("SecureNotes", "Encrypted Hash: $encryptedHashBase64")
-        Log.d("SecureNotes", "IV: $ivBase64")
-        Log.d("SecureNotes", "Salt: $saltBase64")
 
         submitButton.setOnClickListener {
-            val enteredPassword = passwordInput.text.toString()
-
-            if (enteredPassword.isEmpty()) {
-                Toast.makeText(this, "Please enter a password.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            try {
-                val attemptCounter = sharedPrefs.getInt("attemptCounter", 0)
-                if (attemptCounter >= 10) {
-                    resetPassword()
-                    return@setOnClickListener
-                }
-
-                val salt = ByteArrayUtil.fromBase64(saltBase64)
-                val hashedPassword = HashUtil.hashPassword(enteredPassword, salt)
-
-                // dekodowanie
-                val storedEncryptedHash = ByteArrayUtil.fromBase64(encryptedHashBase64)
-                val storedIv = ByteArrayUtil.fromBase64(ivBase64)
-
-                // Deszyfrowanie hasha i porównanie z nowo wprowadzonym hashem hasła
-                val decryptedHash = EncryptionUtil.decryptHash(storedIv, storedEncryptedHash)
-                if (hashedPassword.contentEquals(decryptedHash)) {
-                    Log.d("SecureNotes", "Password matched. Redirecting to second screen.")
-                    sharedPrefs.edit().putInt("attemptCounter", 0)
-                        .apply() // Reset the counter on success
-                    val intent = Intent(this, AccessActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    handleFailedAttempt(attemptCounter)
-                }
-            } catch (e: Exception) {
-                Log.e("SecureNotes", "Error during password validation: ${e.message}")
-                Toast.makeText(
-                    this,
-                    "An error occurred. Please reset your password.",
-                    Toast.LENGTH_LONG
-                ).show()
-                val intent = Intent(this, PasswordSetupActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+            authenticateWithBiometrics()
         }
     }
 
-    private fun handleFailedAttempt(currentAttempt: Int) {
-        val newAttemptCount = currentAttempt + 1
-        sharedPrefs.edit().putInt("attemptCounter", newAttemptCount).apply()
+    private fun authenticateWithBiometrics() {
+        val executor = ContextCompat.getMainExecutor(this)
 
-        if (newAttemptCount >= 10) {
-            resetPassword()
+        val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                Toast.makeText(this@MainActivity, "Uwierzytelnianie zakończone sukcesem!", Toast.LENGTH_SHORT).show()
+                navigateToAccessActivity()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Toast.makeText(this@MainActivity, "Błąd: $errString", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Toast.makeText(this@MainActivity, "Spróbuj ponownie", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Aby przejrzeć notatki, musisz potwierdzić tożsamość")
+            .setNegativeButtonText("Zamknij")
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+            .build()
+
+        val cryptoObject = BiometricsUtil.getCryptoObject()
+        if (cryptoObject != null) {
+            biometricPrompt.authenticate(promptInfo, cryptoObject)
         } else {
-            Toast.makeText(
-                this,
-                "Incorrect password! Attempt $newAttemptCount/10.",
-                Toast.LENGTH_SHORT
-            ).show()
-            passwordInput.text.clear()
+            Toast.makeText(this, "Błąd inicjalizacji biometrii!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun resetPassword() {
-        sharedPrefs.edit()
-            .remove("passwordHash")
-            .remove("iv")
-            .remove("password_salt")
-            .remove("encryptedMessage")
-            .remove("messageIv")
-            .putInt("attemptCounter", 0)
-            .apply()
-
-        // Pop-up
-        AlertDialog.Builder(this)
-            .setTitle("Password Reset")
-            .setMessage("Too many failed attempts. The password has been reset, and saved data has been cleared. Please set a new password.")
-            .setPositiveButton("OK") { _, _ ->
-                val intent = Intent(this, PasswordSetupActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            .setCancelable(false)
-            .show()
+    private fun navigateToAccessActivity() {
+        val intent = Intent(this, AccessActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 
