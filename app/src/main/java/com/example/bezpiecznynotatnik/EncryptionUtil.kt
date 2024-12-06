@@ -60,7 +60,6 @@ object BiometricsUtil {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val KEY_NAME = "biometric_key"
 
-    // Generowanie klucza
     private fun generateSecretKey() {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         if (!keyStore.containsAlias(KEY_NAME)) {
@@ -72,7 +71,7 @@ object BiometricsUtil {
                 )
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                    .setUserAuthenticationRequired(true) // Biometryczne uwierzytelnianie
+                    .setUserAuthenticationRequired(true) 
                     .setInvalidatedByBiometricEnrollment(true) // Klucz pozostaje nieważny po zmianie odcisku
                     .build()
             )
@@ -80,7 +79,6 @@ object BiometricsUtil {
         }
     }
 
-    // Inicjalizacja Cipher
     private fun getCipher(): Cipher {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
@@ -89,7 +87,6 @@ object BiometricsUtil {
         return cipher
     }
 
-    // Tworzenie obiektu CryptoObject
     fun getCryptoObject(): BiometricPrompt.CryptoObject? {
         return try {
             generateSecretKey() // Tworzenie klucza, jeśli nie istnieje
@@ -101,9 +98,6 @@ object BiometricsUtil {
         }
     }
 }
-
-
-
 
 object MessageEncryptionUtil {
     private const val KEY_ALIAS = "MessageEncryptionKey"
