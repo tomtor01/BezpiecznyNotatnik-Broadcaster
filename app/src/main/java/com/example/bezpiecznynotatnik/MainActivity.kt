@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
-        val cipher = BiometricsUtil.getInitializedCipherForEncryption(BiometricsUtil.KEY_NAME)
+        val cipher = BiometricsUtil.getInitializedCipherForEncryption()
         val cryptoObject = BiometricPrompt.CryptoObject(cipher)
         biometricPrompt.authenticate(promptInfo, cryptoObject)
     }
