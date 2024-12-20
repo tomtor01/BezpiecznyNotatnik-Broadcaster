@@ -5,22 +5,32 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-<!--    <EditText-->
-<!--        android:id="@+id/passwordInput"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:autofillHints=""-->
-<!--        android:hint="@string/enter_password"-->
-<!--        android:inputType="textPassword"-->
-<!--        android:layout_marginBottom="16dp" />-->
+    <EditText
+        android:id="@+id/passwordInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:autofillHints=""
+        android:hint="@string/enter_password"
+        android:inputType="textPassword"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="50dp"
+        />
 
     <Button
-        android:id="@+id/submitButton"
+        android:id="@+id/loginWithPasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/submit_password"
+        android:layout_gravity="center"
+        />
+
+    <Button
+        android:id="@+id/loginWithBiometricsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login"
         android:layout_gravity="center"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="200dp"
         />
 
 </LinearLayout>

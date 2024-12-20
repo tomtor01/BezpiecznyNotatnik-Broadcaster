@@ -3,7 +3,7 @@
     package="com.example.bezpiecznynotatnik">
 
     <uses-permission
-        android:name="android.permission.USE_FINGERPRINT" />
+        android:name="android.permission.USE_BIOMETRIC" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AccessActivity" />
-<!--        <activity android:name=".PasswordSetupActivity" />-->
+        <activity android:name=".PasswordSetupActivity" />
     </application>
 
 </manifest>
