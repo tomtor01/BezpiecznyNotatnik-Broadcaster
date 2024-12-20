@@ -5,20 +5,21 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-<!--    <EditText-->
-<!--        android:id="@+id/newPasswordInput"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:hint="Enter New Password"-->
-<!--        android:inputType="textPassword"-->
-<!--        android:layout_marginBottom="16dp" />-->
+    <EditText
+        android:id="@+id/newPasswordInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:autofillHints=""
+        android:hint="@string/enter_new_password"
+        android:inputType="textPassword"
+        android:layout_marginBottom="16dp" />
 
-<!--    <Button-->
-<!--        android:id="@+id/changePasswordButton"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Change Password"-->
-<!--        android:layout_marginBottom="16dp" />-->
+    <Button
+        android:id="@+id/changePasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/change_password"
+        android:layout_marginBottom="50dp" />
 
     <EditText
         android:id="@+id/messageInput"
@@ -40,7 +41,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/delete_message"
-        android:textColor="@color/red"/>
+        android:textColor="@color/red"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/logoutButton"
@@ -58,7 +60,7 @@
             android:id="@+id/messageDisplay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_message_saved_yet"
+            android:text="@string/no_messages"
             android:textSize="18sp"
             android:padding="8dp"
             android:scrollbars="vertical" />

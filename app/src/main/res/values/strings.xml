@@ -1,12 +1,14 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Bezpieczny notatnik</string>
-    <string name="enter_password">Enter Password</string>
-    <string name="enter_new_password">Enter New Password</string>
-    <string name="login">Potwierdź tożsamość</string>
+    <string name="enter_password">Wpisz hasło</string>
+    <string name="enter_new_password" tools:ignore="Typos">Wpisz nowe hasło</string>
+    <string name="login">Użyj biometrii</string>
+    <string name="submit_password">Zatwierdź</string>
     <string name="enter_your_message">Wpisz tekst</string>
     <string name="save_message">Zapisz notatkę</string>
     <string name="delete_message">Usuń notatkę</string>
     <string name="logout">Wyjście</string>
-    <string name="no_message_saved_yet">Brak notatek</string>
-    <string name="set_password">Set Password</string>
+    <string name="no_messages">Brak notatek</string>
+    <string name="set_password">Ustaw hasło</string>
+    <string name="change_password">Zmień hasło</string>
 </resources>

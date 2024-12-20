@@ -13,10 +13,10 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 
-object BiometricsUtil {
+object EncryptionUtil {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val KEY_SIZE = 256
-    const val KEY_NAME = "app_key"
+    private const val KEY_NAME = "APP_KEY2"
     private const val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
     private const val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
     private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
@@ -28,16 +28,18 @@ object BiometricsUtil {
     }
 
     // Get or create a secret key in the Android Keystore
-    private fun getOrCreateSecretKey(keyName: String): SecretKey {
+    private fun getOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
-        keyStore.getKey(keyName, null)?.let { return it as SecretKey }
+        keyStore.getKey(KEY_NAME, null)?.let { return it as SecretKey }
 
-        val keyGenParams = KeyGenParameterSpec.Builder(keyName,
+        val keyGenParams = KeyGenParameterSpec.Builder(
+            KEY_NAME,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
             .setBlockModes(ENCRYPTION_BLOCK_MODE)
             .setEncryptionPaddings(ENCRYPTION_PADDING)
             .setKeySize(KEY_SIZE)
-            .setUserAuthenticationRequired(false)
+            .setRandomizedEncryptionRequired(true)
+            .setInvalidatedByBiometricEnrollment(true)
             .build()
 
         return KeyGenerator.getInstance(ENCRYPTION_ALGORITHM, ANDROID_KEYSTORE).apply {
@@ -48,7 +50,7 @@ object BiometricsUtil {
     // Initialize a Cipher for encryption
     fun getInitializedCipherForEncryption(): Cipher {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(KEY_NAME)
+        val secretKey = getOrCreateSecretKey()
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         return cipher
     }
@@ -56,7 +58,7 @@ object BiometricsUtil {
     // Initialize a Cipher for decryption
     private fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(KEY_NAME)
+        val secretKey = getOrCreateSecretKey()
         cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
         return cipher
     }
@@ -74,38 +76,17 @@ object BiometricsUtil {
         val plaintext = cipher.doFinal(encryptedMessage)
         return String(plaintext, Charset.forName("UTF-8"))
     }
+
+    fun encryptHash(hash: ByteArray): Pair<ByteArray, ByteArray> {
+        val cipher = getInitializedCipherForEncryption()
+        return Pair(cipher.iv, cipher.doFinal(hash))
+    }
+
+    fun decryptHash(iv: ByteArray, encryptedHash: ByteArray): ByteArray {
+        val cipher = getInitializedCipherForDecryption(iv)
+        return cipher.doFinal(encryptedHash)
+    }
 }
-
-
-//object MessageEncryptionUtil {
-//    private const val KEY_ALIAS = "MessageEncryptionKey"
-//    private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-//    private const val TRANSFORMATION = "AES/CBC/PKCS7Padding"
-//
-//
-//    private fun getOrCreateKey(): SecretKey {
-//        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)   // ładowanie klucza symetrycznego
-//        keyStore.load(null)
-//
-//        // sprawdzanie czy istnieje juz klucz
-//        keyStore.getKey(KEY_ALIAS, null)?.let {
-//            return it as SecretKey
-//        }
-//
-//        // Generowanie nowego klucza jesli jeszcze nie istnieje
-//        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
-//        keyGenerator.init(
-//            KeyGenParameterSpec.Builder(
-//                KEY_ALIAS,
-//                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-//            )
-//                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-//                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-//                .build()
-//        )
-//        return keyGenerator.generateKey()
-//    }
-//}
 
 object SaltUtil {
     fun generateSalt(): ByteArray {
@@ -116,7 +97,7 @@ object SaltUtil {
 }
 object HashUtil {
     fun hashPassword(password: String, salt: ByteArray): ByteArray {
-        val digest = MessageDigest.getInstance("SHA-256")
+        val digest = MessageDigest.getInstance("SHA-512")
         val saltedPassword = salt + password.toByteArray()
         return digest.digest(saltedPassword)
     }
