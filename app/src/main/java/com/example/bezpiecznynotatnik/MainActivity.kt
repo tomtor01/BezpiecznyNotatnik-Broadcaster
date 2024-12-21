@@ -4,11 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -44,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 Toast.makeText(this@MainActivity, "Uwierzytelnianie zakończone sukcesem!", Toast.LENGTH_SHORT).show()
-                navigateToAccessActivity()
+                navigateToAccessActivity(result.cryptoObject)
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -64,18 +61,20 @@ class MainActivity : AppCompatActivity() {
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
-        val cryptoObject = BiometricsUtil.getCryptoObject()
-        if (cryptoObject != null) {
-            biometricPrompt.authenticate(promptInfo, cryptoObject)
-        } else {
-            Toast.makeText(this, "Błąd inicjalizacji biometrii!", Toast.LENGTH_SHORT).show()
-        }
+        val cipher = BiometricsUtil.getInitializedCipherForEncryption()
+        val cryptoObject = BiometricPrompt.CryptoObject(cipher)
+        biometricPrompt.authenticate(promptInfo, cryptoObject)
     }
 
-    private fun navigateToAccessActivity() {
+    private fun navigateToAccessActivity(cryptoObject: BiometricPrompt.CryptoObject?) {
         val intent = Intent(this, AccessActivity::class.java)
+        intent.putExtra(CRYPTO_IV, cryptoObject?.cipher?.iv) // Pass initialization vector
         startActivity(intent)
         finish()
+    }
+
+    companion object {
+        const val CRYPTO_IV = "crypto_iv"
     }
 }
 
