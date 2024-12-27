@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,11 +9,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
-import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import javax.crypto.Cipher
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +38,6 @@ class MainActivity : AppCompatActivity() {
             redirectToPasswordSetup()
             return
         }
-
 
         loginWithPasswordButton.setOnClickListener {
             authenticateWithPassword()
@@ -177,12 +173,4 @@ class MainActivity : AppCompatActivity() {
             .setCancelable(false)
             .show()
     }
-    // troubleshooting
-    private fun resetEncryptedData() {
-        sharedPrefs.edit()
-            .clear()
-            .apply()
-        Toast.makeText(this, "Data reset due to key change.", Toast.LENGTH_SHORT).show()
-    }
 }
-
