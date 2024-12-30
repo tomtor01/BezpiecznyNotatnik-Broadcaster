@@ -3,10 +3,10 @@
     <string name="enter_password">Wpisz hasło</string>
     <string name="enter_new_password" tools:ignore="Typos">Wpisz nowe hasło</string>
     <string name="login">Użyj biometrii</string>
-    <string name="submit_password">Zatwierdź</string>
+    <string name="submit">Zatwierdź</string>
     <string name="enter_your_message">Wpisz tekst</string>
     <string name="save_message">Zapisz notatkę</string>
-    <string name="delete_message">Usuń</string>
+    <string name="delete_message">Usuń notatkę</string>
     <string name="logout">Wyjście</string>
     <string name="no_messages">Brak notatek</string>
     <string name="set_password">Ustaw hasło</string>
@@ -14,5 +14,5 @@
     <string name="cancel">Anuluj</string>
     <string name="add_note">Dodaj notatkę</string>
     <string name="edit_note">Edytuj notatkę</string>
-
+    <string name="go_back">Powrót</string>
 </resources>

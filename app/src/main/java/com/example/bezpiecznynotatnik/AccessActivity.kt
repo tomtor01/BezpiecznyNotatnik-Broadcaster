@@ -14,18 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class AccessActivity : AppCompatActivity() {
 
     private lateinit var changePasswordButton: Button
-    private lateinit var addMessageButton: Button
     private lateinit var recyclerViewNotes: RecyclerView
-    private lateinit var logoutButton: Button
     private lateinit var sharedPrefs: SharedPreferences
-
-    private lateinit var db: AppDatabase
     private lateinit var noteDao: NoteDao
 
     @SuppressLint("SetTextI18n", "MissingInflatedId")
@@ -34,17 +30,10 @@ class AccessActivity : AppCompatActivity() {
         setContentView(R.layout.activity_access)
 
         changePasswordButton = findViewById(R.id.changePasswordButton)
-        addMessageButton = findViewById(R.id.addMessageButton)
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes)
-        logoutButton = findViewById(R.id.logoutButton)
         sharedPrefs = getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
 
-        db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "notes_db"
-        ).build()
-        noteDao = db.noteDao()
+        noteDao = (application as SecureNotesApp).noteDatabase.noteDao()
 
         // Change Password functionality
         changePasswordButton.setOnClickListener {
@@ -58,7 +47,7 @@ class AccessActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setTitle(getString(R.string.change_password))
                 .setView(passwordDialogView) // Set the custom view
-                .setPositiveButton(getString(R.string.submit_password)) { _, _ ->
+                .setPositiveButton(getString(R.string.submit)) { _, _ ->
                     val newPassword = newPasswordInput.text.toString()
                     if (newPassword.isNotEmpty()) {
                         try {
@@ -93,16 +82,24 @@ class AccessActivity : AppCompatActivity() {
                 .show()
         }
 
-        addMessageButton.setOnClickListener {
-            saveNote()
-        }
 
-        logoutButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigation1)
 
+        bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.addMessageButton -> {
+                    saveNote()
+                    true
+                }
+                R.id.logoutButton -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                else -> false
+            }
+        }
         loadNotes()
     }
 
@@ -147,105 +144,33 @@ class AccessActivity : AppCompatActivity() {
 
     private fun loadNotes() {
         lifecycleScope.launch {
-            try {
-                val notes = noteDao.getAllNotes()
+            val notes = noteDao.getAllNotes()
 
-                val decryptedNotes = notes.map { note ->
-                    try {
-                        val encryptedMessage = ByteArrayUtil.fromBase64(note.encryptedMessage)
-                        val iv = ByteArrayUtil.fromBase64(note.iv)
-                        EncryptionUtil.decryptMessage(encryptedMessage, iv)
-                    } catch (e: Exception) {
-                        Log.e("AccessActivity", "Error decrypting note: ${e.message}")
-                        "Error decrypting note"
-                    }
-                }
-
-                // Update RecyclerView
-                val adapter = NotesAdapter(
-                    decryptedNotes,
-                    notes,
-                    onEditNote = { note -> showEditNoteDialog(note) },
-                    onDeleteNote = { note -> showDeleteConfirmationDialog(note) }
-                )
-                recyclerViewNotes.adapter = adapter
-                recyclerViewNotes.layoutManager = LinearLayoutManager(this@AccessActivity)
-            } catch (e: Exception) {
-                Log.e("AccessActivity", "Error loading notes: ${e.message}")
-                Toast.makeText(this@AccessActivity, "Error loading notes.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    @SuppressLint("MissingInflatedId")
-    private fun showEditNoteDialog(note: Note) {
-        val dialogView = layoutInflater.inflate(R.layout.edit_note_dialog, null)
-        val editNoteInput = dialogView.findViewById<EditText>(R.id.editNoteInput)
-
-        // Decrypt and set the current note content
-        val decryptedNote = EncryptionUtil.decryptMessage(
-            ByteArrayUtil.fromBase64(note.encryptedMessage),
-            ByteArrayUtil.fromBase64(note.iv)
-        )
-        editNoteInput.setText(decryptedNote)
-
-        AlertDialog.Builder(this)
-            .setTitle("Edit Note")
-            .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
-                val updatedNoteContent = editNoteInput.text.toString()
-                if (updatedNoteContent.isNotEmpty()) {
-                    lifecycleScope.launch {
-                        try {
-                            // Encrypt updated note
-                            val (encryptedMessage, iv) = EncryptionUtil.encryptMessage(updatedNoteContent)
-                            val updatedNote = note.copy(
-                                encryptedMessage = ByteArrayUtil.toBase64(encryptedMessage),
-                                iv = ByteArrayUtil.toBase64(iv)
-                            )
-
-                            // Update the note in the database
-                            noteDao.update(updatedNote)
-
-                            Toast.makeText(this@AccessActivity, "Note updated successfully.", Toast.LENGTH_SHORT).show()
-                            loadNotes() // Refresh the notes list
-                        } catch (e: Exception) {
-                            Log.e("AccessActivity", "Error updating note: ${e.message}")
-                            Toast.makeText(this@AccessActivity, "Error updating the note.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
-                    Toast.makeText(this, "Note cannot be empty.", Toast.LENGTH_SHORT).show()
+            val decryptedNotes = notes.map { note ->
+                try {
+                    EncryptionUtil.decryptMessage(
+                        ByteArrayUtil.fromBase64(note.encryptedMessage),
+                        ByteArrayUtil.fromBase64(note.iv)
+                    )
+                } catch (e: Exception) {
+                    "Error decrypting note"
                 }
             }
-            .setNegativeButton("Cancel", null)
-            .create()
-            .show()
-    }
 
-    private fun deleteNote(noteId: Int) {
-        lifecycleScope.launch {
-            try {
-                noteDao.deleteById(noteId)
-                Toast.makeText(this@AccessActivity, "Note deleted successfully.", Toast.LENGTH_SHORT).show()
-                loadNotes() // Refresh RecyclerView
-            } catch (e: Exception) {
-                Log.e("AccessActivity", "Error deleting note: ${e.message}")
-                Toast.makeText(this@AccessActivity, "Error deleting the note.", Toast.LENGTH_SHORT).show()
-            }
+            // Set up the adapter
+            val adapter = NotesAdapter(
+                decryptedNotes,
+                notes,
+                onEditNote = { note ->
+                    val intent = Intent(this@AccessActivity, EditNoteActivity::class.java)
+                    intent.putExtra("noteId", note.id)
+                    intent.putExtra("noteContent", decryptedNotes[notes.indexOf(note)])
+                    startActivity(intent)
+                }
+            )
+            recyclerViewNotes.adapter = adapter
+            recyclerViewNotes.layoutManager = LinearLayoutManager(this@AccessActivity)
         }
-    }
-
-    private fun showDeleteConfirmationDialog(note: Note) {
-        AlertDialog.Builder(this)
-            .setTitle("Delete Note")
-            .setMessage("Are you sure you want to delete this note?")
-            .setPositiveButton("Yes") { _, _ ->
-                deleteNote(note.id)
-            }
-            .setNegativeButton("No", null)
-            .create()
-            .show()
     }
 }
 

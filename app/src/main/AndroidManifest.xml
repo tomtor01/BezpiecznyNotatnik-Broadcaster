@@ -6,6 +6,7 @@
         android:name="android.permission.USE_BIOMETRIC" />
 
     <application
+        android:name=".SecureNotesApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,6 +25,8 @@
         </activity>
         <activity android:name=".AccessActivity" />
         <activity android:name=".PasswordSetupActivity" />
+        <activity android:name=".EditNoteActivity"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

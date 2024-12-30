@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/deleteNote"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/delete_message"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/saveButton"
+        android:icon="@drawable/ic_approve"
+        android:title="@string/submit"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/goBackButton"
+        android:icon="@drawable/ic_go_back"
+        android:title="@string/go_back"
+        app:showAsAction="ifRoom" />
+
+</menu>
