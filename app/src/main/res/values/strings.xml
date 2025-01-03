@@ -1,18 +1,32 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Bezpieczny notatnik</string>
-    <string name="enter_password">Wpisz hasło</string>
-    <string name="enter_new_password" tools:ignore="Typos">Wpisz nowe hasło</string>
-    <string name="login">Użyj biometrii</string>
-    <string name="submit">Zatwierdź</string>
-    <string name="enter_your_message">Wpisz tekst</string>
-    <string name="save_message">Zapisz notatkę</string>
-    <string name="delete_message">Usuń notatkę</string>
-    <string name="logout">Wyjście</string>
-    <string name="no_messages">Brak notatek</string>
-    <string name="set_password">Ustaw hasło</string>
-    <string name="change_password">Zmień hasło</string>
-    <string name="cancel">Anuluj</string>
-    <string name="add_note">Dodaj notatkę</string>
-    <string name="edit_note">Edytuj notatkę</string>
-    <string name="go_back">Powrót</string>
+<resources>
+    <string name="app_name">Secure Notebook</string>
+    <string name="enter_password">Enter password</string>
+    <string name="enter_new_password">Enter new password</string>
+    <string name="use_biometric">Use biometry</string>
+    <string name="submit">Submit</string>
+    <string name="log_in_text">Log in</string>
+    <string name="enter_new_note">Write something…</string>
+    <string name="save_note">Save</string>
+    <string name="delete_message">Delete</string>
+    <string name="logout">Log out</string>
+    <string name="no_messages">Nothing here…</string>
+    <string name="set_password">Set password</string>
+    <string name="change_password">Change password</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_note">Add note</string>
+    <string name="edit_note">Edit</string>
+    <string name="see_notes">Your notes</string>
+    <string name="go_back">Back</string>
+    <string name="adjust">Adjust</string>
+    <string name="confirm_new_password">Repeat new password</string>
+    <string name="choose_language">Change language</string>
+    <string name="apply">Apply</string>
+    <string-array name="language_names">
+        <item>English</item>
+        <item>Polski</item>
+    </string-array>
+    <string-array name="language_codes">
+        <item>en</item>
+        <item>pl</item>
+    </string-array>
 </resources>

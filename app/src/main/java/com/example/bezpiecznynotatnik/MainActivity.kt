@@ -1,24 +1,42 @@
 package com.example.bezpiecznynotatnik
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-
+import com.example.bezpiecznynotatnik.activities.AccessActivity
+import com.example.bezpiecznynotatnik.activities.PasswordSetupActivity
+import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
+import com.example.bezpiecznynotatnik.utils.EncryptionUtil
+import com.example.bezpiecznynotatnik.utils.HashUtil
+import com.example.bezpiecznynotatnik.utils.LocaleHelper
+import com.example.bezpiecznynotatnik.utils.PreferenceHelper
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var passwordInput: EditText
     private lateinit var loginWithPasswordButton: Button
     private lateinit var loginWithBiometricsButton: Button
     private lateinit var sharedPrefs: SharedPreferences
+
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase == null) {
+            super.attachBaseContext(null)
+            return
+        }
+        val language = PreferenceHelper.getLanguage(newBase) ?: Locale.getDefault().language
+        val context = LocaleHelper.setLocale(newBase, language)
+        super.attachBaseContext(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +56,9 @@ class MainActivity : AppCompatActivity() {
             redirectToPasswordSetup()
             return
         }
-
         loginWithPasswordButton.setOnClickListener {
             authenticateWithPassword()
         }
-
         loginWithBiometricsButton.setOnClickListener {
             authenticateWithBiometrics()
         }
@@ -56,12 +72,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun authenticateWithPassword() {
         val enteredPassword = passwordInput.text.toString()
-
         if (enteredPassword.isEmpty()) {
             Toast.makeText(this, "Hasło nie może być puste.", Toast.LENGTH_SHORT).show()
             return
         }
-
         try {
             val attemptCounter = sharedPrefs.getInt("attemptCounter", 0)
             if (attemptCounter >= 10) {

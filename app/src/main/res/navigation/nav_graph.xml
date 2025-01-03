@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_notesView">
+
+    <!-- Notes Fragment -->
+    <fragment
+        android:id="@+id/nav_notesView"
+        android:name="com.example.bezpiecznynotatnik.fragments.NotesFragment"
+        android:label="Notes">
+        <action
+            android:id="@+id/action_nav_notesView_to_nav_editNote"
+            app:destination="@id/nav_editNote"
+            app:popUpTo="@id/nav_notesView"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Add Note Fragment -->
+    <fragment
+        android:id="@+id/nav_addNote"
+        android:name="com.example.bezpiecznynotatnik.fragments.AddNoteFragment"
+        android:label="Add Note" />
+
+    <!-- Settings Fragment -->
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.bezpiecznynotatnik.fragments.SettingsFragment"
+        android:label="Settings" />
+
+    <!-- Edit Note Fragment (Hidden Destination) -->
+    <fragment
+        android:id="@+id/nav_editNote"
+        android:name="com.example.bezpiecznynotatnik.fragments.EditNoteFragment"
+        android:label="Edit Note">
+        <argument
+            android:name="noteId"
+            app:argType="integer" />
+        <argument
+            android:name="noteContent"
+            app:argType="string" />
+    </fragment>
+</navigation>

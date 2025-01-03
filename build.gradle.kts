@@ -5,3 +5,13 @@ plugins {
     alias(libs.plugins.kotlinKsp) apply false
     alias(libs.plugins.kotlin.compose) apply false
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath (libs.androidx.navigation.safe.args.gradle.plugin.v260)
+    }
+}

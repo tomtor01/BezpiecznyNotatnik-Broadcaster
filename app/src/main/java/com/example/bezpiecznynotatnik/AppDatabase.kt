@@ -12,7 +12,7 @@ abstract class AppDatabase : RoomDatabase() {
 data class Note(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val encryptedMessage: String,
-    val iv: String // Store initialization vector for encryption
+    val iv: String
 )
 
 @Dao

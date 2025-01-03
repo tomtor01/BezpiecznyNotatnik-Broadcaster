@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nav_notesView"
+        android:icon="@drawable/ic_see_notes"
+        android:title="@string/see_notes"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_addNote"
+        android:icon="@drawable/ic_add_note"
+        android:title="@string/add_note"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/adjust"
+        app:showAsAction="ifRoom" />
+
+</menu>

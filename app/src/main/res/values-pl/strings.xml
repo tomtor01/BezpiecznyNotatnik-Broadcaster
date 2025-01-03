@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bezpieczny notatnik</string>
+    <string name="enter_password">Wpisz hasło</string>
+    <string name="enter_new_password">Wpisz nowe hasło</string>
+    <string name="use_biometric">Użyj biometrii</string>
+    <string name="submit">Zatwierdź</string>
+    <string name="log_in_text">Zaloguj się</string>
+    <string name="enter_new_note">Wpisz tekst…</string>
+    <string name="save_note">Zapisz notatkę</string>
+    <string name="delete_message">Usuń notatkę</string>
+    <string name="logout">Wyjście</string>
+    <string name="no_messages">Brak notatek</string>
+    <string name="set_password">Ustaw hasło</string>
+    <string name="change_password">Zmień hasło</string>
+    <string name="cancel">Anuluj</string>
+    <string name="add_note">Dodaj</string>
+    <string name="edit_note">Edytuj</string>
+    <string name="see_notes">Notatki</string>
+    <string name="go_back">Powrót</string>
+    <string name="adjust">Dostosuj</string>
+    <string name="confirm_new_password">Powtórz nowe hasło</string>
+    <string name="choose_language">Zmień język</string>
+    <string name="apply">Potwierdź</string>
+    <string-array name="language_names">
+        <item>English</item>
+        <item>Polski</item>
+    </string-array>
+    <string-array name="language_codes">
+        <item>en</item>
+        <item>pl</item>
+    </string-array>
+</resources>
