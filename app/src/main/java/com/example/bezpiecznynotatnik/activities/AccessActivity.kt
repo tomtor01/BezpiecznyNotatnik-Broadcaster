@@ -42,9 +42,13 @@ class AccessActivity : NavigationController() {
         bottomNavigationView.setupWithNavController(navController)
     }
 
-    override fun onUserInteraction() {
-        super.onUserInteraction()
-        (application as SecureNotesApp).resetLogoutTimer()
+    override fun onStop() {
+        super.onStop()
+        (application as SecureNotesApp).scheduleLogoutWork()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (application as SecureNotesApp).cancelLogoutWork()
     }
 }
-

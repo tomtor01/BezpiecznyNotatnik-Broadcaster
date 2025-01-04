@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="center"
-    android:textSize="16sp"
+    android:textSize="18sp"
     android:textColor="@color/md_theme_onSurface"
     android:background="?attr/selectableItemBackground" />

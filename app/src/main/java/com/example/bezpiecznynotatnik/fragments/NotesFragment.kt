@@ -1,6 +1,6 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import com.example.bezpiecznynotatnik.NoteDao
+import com.example.bezpiecznynotatnik.data.NoteDao
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.utils.ByteArrayUtil

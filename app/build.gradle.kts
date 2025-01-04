@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.ui.graphics.android)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

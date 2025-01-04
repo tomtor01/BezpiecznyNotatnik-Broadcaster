@@ -1,12 +1,13 @@
 package com.example.bezpiecznynotatnik.utils
 
+import com.example.bezpiecznynotatnik.data.Note
+import com.example.bezpiecznynotatnik.R
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bezpiecznynotatnik.Note
-import com.example.bezpiecznynotatnik.R
 
 class NotesAdapter(
     private val decryptedNotes: List<String>,

@@ -1,7 +1,6 @@
 package com.example.bezpiecznynotatnik.activities
 
 import com.example.bezpiecznynotatnik.R
-import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.utils.*
 
 import android.content.Context
@@ -110,7 +109,6 @@ class MainActivity : AppCompatActivity() {
         val biometricManager = BiometricManager.from(this)
         if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
             Toast.makeText(this, "Biometric authentication is not available", Toast.LENGTH_LONG).show()
-            finish()
         }
         val executor = ContextCompat.getMainExecutor(this)
 
@@ -144,7 +142,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToAccessActivity() {
-        (application as SecureNotesApp).isUserLoggedIn = true
         val intent = Intent(this, AccessActivity::class.java)
         startActivity(intent)
         finish()

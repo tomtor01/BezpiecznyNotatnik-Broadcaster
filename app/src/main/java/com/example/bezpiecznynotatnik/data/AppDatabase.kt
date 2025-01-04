@@ -1,11 +1,10 @@
-package com.example.bezpiecznynotatnik
+package com.example.bezpiecznynotatnik.data
 
 import androidx.room.*
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
-
 }
 
 @Entity(tableName = "notes")
