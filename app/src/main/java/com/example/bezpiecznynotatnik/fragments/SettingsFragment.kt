@@ -1,5 +1,9 @@
 package com.example.bezpiecznynotatnik.fragments
 
+import android.annotation.SuppressLint
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.utils.*
+
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,9 +16,8 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.fragment.app.Fragment
-import com.example.bezpiecznynotatnik.R
-import com.example.bezpiecznynotatnik.utils.*
 
 class SettingsFragment : Fragment() {
 
@@ -32,13 +35,13 @@ class SettingsFragment : Fragment() {
         changePasswordButton = view.findViewById(R.id.changePasswordButton)
         languageSpinner = view.findViewById(R.id.language_spinner)
         applyLanguageButton = view.findViewById(R.id.apply_language_button)
-        sharedPrefs = requireContext().getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
+        //sharedPrefs = requireContext().getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
 
+        setupLanguageSpinner()
 
         changePasswordButton.setOnClickListener {
             showChangePasswordDialog()
         }
-        setupLanguageSpinner()
 
         applyLanguageButton.setOnClickListener {
             applySelectedLanguage()
@@ -63,6 +66,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     private fun applySelectedLanguage() {
         val languageCodes = resources.getStringArray(R.array.language_codes)
         val selectedPosition = languageSpinner.selectedItemPosition
@@ -72,7 +76,8 @@ class SettingsFragment : Fragment() {
         PreferenceHelper.setLanguage(requireContext(), selectedLanguageCode)
         LocaleHelper.setLocale(requireContext(), selectedLanguageCode)
 
-        Toast.makeText(requireContext(), "Language changed to ${languageSpinner.selectedItem}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),
+            getString(R.string.language_changed, languageSpinner.selectedItem), Toast.LENGTH_SHORT).show()
 
         // Recreate the activity to apply the language change
         activity?.let {
@@ -103,51 +108,19 @@ class SettingsFragment : Fragment() {
                 val repeatPassword = repeatPasswordInput.text.toString()
 
                 if (newPassword.isEmpty() || repeatPassword.isEmpty()) {
-                    Toast.makeText(requireContext(), "Password cannot be empty!", Toast.LENGTH_SHORT).show()
+                    // do nothing
                 } else if (newPassword != repeatPassword) {
-                    Toast.makeText(requireContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        getString(R.string.not_equal_passwords), Toast.LENGTH_SHORT).show()
                     newPasswordInput.text.clear()
                     repeatPasswordInput.text.clear()
                 } else {
                     // Call changePassword and dismiss dialog on success
-                    changePassword(newPassword, repeatPassword)
+                    changePassword(requireContext(), newPassword)
                     dialog.dismiss()
                 }
             }
         }
         dialog.show()
-    }
-
-    private fun changePassword(newPassword: String, repeatPassword: String) {
-        if (newPassword.isEmpty() || repeatPassword.isEmpty()) {
-            Toast.makeText(requireContext(), "Password cannot be empty!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (newPassword != repeatPassword) {
-            Toast.makeText(requireContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        try {
-            val salt = SaltUtil.generateSalt()
-            val passwordHash = HashUtil.hashPassword(newPassword, salt)
-            val (iv, encryptedHash) = EncryptionUtil.encryptHash(passwordHash)
-
-            // Save the hashed password, IV, and salt in SharedPreferences
-            sharedPrefs.edit()
-                .putString("passwordHash", ByteArrayUtil.toBase64(encryptedHash))
-                .putString("iv", ByteArrayUtil.toBase64(iv))
-                .putString("password_salt", ByteArrayUtil.toBase64(salt))
-                .apply()
-
-            Toast.makeText(requireContext(), "Password changed successfully!", Toast.LENGTH_SHORT)
-                .show()
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "An error occurred while changing the password!",
-                Toast.LENGTH_SHORT
-            ).show()
-            e.printStackTrace()
-        }
     }
 }

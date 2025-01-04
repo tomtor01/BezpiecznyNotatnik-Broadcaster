@@ -24,7 +24,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="VisualLintTextFieldSize" />
 
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineLeft"
         android:layout_width="wrap_content"
@@ -43,7 +42,6 @@
         android:id="@+id/deleteNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:text="@string/delete_message"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guidelineLeft"
@@ -54,8 +52,9 @@
         android:id="@+id/saveButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:text="@string/submit"
+        android:backgroundTint="@color/md_theme_surfaceVariant"
+        android:textColor="@color/md_theme_onSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guidelineRight"

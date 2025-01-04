@@ -32,6 +32,7 @@ class NotesFragment : Fragment() {
 
         setupRecyclerView()
         loadNotes()
+
         return view
     }
 

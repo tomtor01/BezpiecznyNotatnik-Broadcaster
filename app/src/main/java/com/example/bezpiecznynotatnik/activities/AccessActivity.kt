@@ -1,14 +1,17 @@
 package com.example.bezpiecznynotatnik.activities
 
-import android.content.Context
-import android.os.Bundle
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.LocaleHelper
 import com.example.bezpiecznynotatnik.utils.NavigationController
 import com.example.bezpiecznynotatnik.utils.PreferenceHelper
+
+import android.content.Context
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.example.bezpiecznynotatnik.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
 import java.util.Locale
 
 class AccessActivity : NavigationController() {
@@ -24,6 +27,7 @@ class AccessActivity : NavigationController() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_access)
 

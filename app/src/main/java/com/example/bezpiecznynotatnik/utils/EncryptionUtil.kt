@@ -88,21 +88,6 @@ object EncryptionUtil {
     }
 }
 
-object SaltUtil {
-    fun generateSalt(): ByteArray {
-        val salt = ByteArray(16) // 16 bytes = 128-bit salt
-        SecureRandom().nextBytes(salt)
-        return salt
-    }
-}
-object HashUtil {
-    fun hashPassword(password: String, salt: ByteArray): ByteArray {
-        val digest = MessageDigest.getInstance("SHA-512")
-        val saltedPassword = salt + password.toByteArray()
-        return digest.digest(saltedPassword)
-    }
-}
-
 object ByteArrayUtil {
     fun toBase64(bytes: ByteArray): String = Base64.encodeToString(bytes, Base64.NO_WRAP)
     fun fromBase64(base64String: String): ByteArray = Base64.decode(base64String, Base64.NO_WRAP)

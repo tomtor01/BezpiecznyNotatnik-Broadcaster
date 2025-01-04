@@ -1,36 +1,45 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.bezpiecznynotatnik.Note
 import com.example.bezpiecznynotatnik.NoteDao
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
-import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
-import com.example.bezpiecznynotatnik.utils.EncryptionUtil
+import com.example.bezpiecznynotatnik.utils.*
+
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources.getColorStateList
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class EditNoteFragment : Fragment() {
 
     private lateinit var editNoteInput: EditText
+    private lateinit var saveButton: Button
     private lateinit var noteDao: NoteDao
     private var noteId: Int = -1
+    private var originalNoteContent: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        bottomNavigationView.menu.findItem(R.id.nav_addNote).isChecked = true // Highlight Add Note
+        bottomNavigationView.menu.findItem(R.id.nav_create).isChecked = true // Highlight Add Note
         bottomNavigationView.isEnabled = false
     }
 
@@ -41,18 +50,64 @@ class EditNoteFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_edit_note, container, false)
 
         editNoteInput = view.findViewById(R.id.editNoteInput)
+        saveButton = view.findViewById(R.id.saveButton)
         noteDao = (requireActivity().application as SecureNotesApp).noteDatabase.noteDao()
 
         // Get arguments from navigation
         noteId = arguments?.getInt("noteId") ?: -1
-        val noteContent = arguments?.getString("noteContent") ?: ""
+        originalNoteContent = arguments?.getString("noteContent") ?: ""
 
-        editNoteInput.setText(noteContent)
+        // Initialize the input field with the original note content
+        editNoteInput.setText(originalNoteContent)
 
-        view.findViewById<View>(R.id.saveButton).setOnClickListener { updateNote() }
+        // Set up TextWatcher for input field
+        setupTextWatcher()
+
+        // Set up Save button
+        saveButton.setOnClickListener { updateNote() }
+
+        // Set up Delete button
         view.findViewById<View>(R.id.deleteNote).setOnClickListener { showDeleteConfirmationDialog() }
 
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.setPadding(16, 16, 16, imeInsets.bottom + 16) // Adjust bottom padding dynamically
+            insets
+        }
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        resetInputField()
+    }
+
+    private fun setupTextWatcher() {
+        editNoteInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val hasChanged = s.toString() != originalNoteContent
+                saveButton.isEnabled = hasChanged
+                saveButton.isEnabled = hasChanged
+                val (backgroundTintList, textColor) = if (hasChanged) {
+                    ContextCompat.getColorStateList(requireContext(), R.color.md_theme_primary) to
+                            ContextCompat.getColorStateList(requireContext(), R.color.md_theme_onPrimary)
+                } else {
+                    ContextCompat.getColorStateList(requireContext(), R.color.md_theme_surfaceVariant) to
+                            ContextCompat.getColorStateList(requireContext(), R.color.md_theme_onSurfaceVariant)
+                }
+
+                saveButton.backgroundTintList = backgroundTintList
+                saveButton.setTextColor(textColor)
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun resetInputField() {
+        editNoteInput.setText(originalNoteContent)
+        saveButton.isEnabled = false
+        saveButton.backgroundTintList = getColorStateList(requireContext(), R.color.md_theme_surfaceVariant)
     }
 
     private fun updateNote() {
@@ -61,9 +116,7 @@ class EditNoteFragment : Fragment() {
         if (noteId != -1) {
             lifecycleScope.launch {
                 try {
-                    val (encryptedMessage, iv) = EncryptionUtil.encryptMessage(
-                        updatedContent
-                    )
+                    val (encryptedMessage, iv) = EncryptionUtil.encryptMessage(updatedContent)
                     val updatedNote = Note(
                         id = noteId,
                         encryptedMessage = ByteArrayUtil.toBase64(encryptedMessage),
@@ -71,11 +124,13 @@ class EditNoteFragment : Fragment() {
                     )
                     noteDao.update(updatedNote)
 
-                    Toast.makeText(requireContext(), "Note saved!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        getString(R.string.note_updated), Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()
                 } catch (e: Exception) {
-                    Log.e("EditNoteActivity", "Error saving note: ${e.message}")
-                    Toast.makeText(requireContext(), "Failed to save note.", Toast.LENGTH_SHORT).show()
+                    Log.e("EditNoteFragment", "Error saving note: ${e.message}")
+                    Toast.makeText(requireContext(),
+                        getString(R.string.save_note_failure), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -83,10 +138,10 @@ class EditNoteFragment : Fragment() {
 
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete Note")
-            .setMessage("Are you sure you want to delete this note?")
-            .setPositiveButton("Yes") { _, _ -> deleteNote() }
-            .setNegativeButton("No", null)
+            .setTitle(getString(R.string.delete_note_dialog_tittle))
+            .setMessage(getString(R.string.delete_note_dialog_text))
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> deleteNote() }
+            .setNegativeButton(getString(R.string.no), null)
             .create()
             .show()
     }
@@ -95,11 +150,12 @@ class EditNoteFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 noteDao.deleteById(noteId)
-                Toast.makeText(requireContext(), "Note deleted successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.note_deleted), Toast.LENGTH_SHORT).show()
                 findNavController().navigateUp()
             } catch (e: Exception) {
-                Log.e("EditNoteActivity", "Error deleting note: ${e.message}")
-                Toast.makeText(requireContext(), "Failed to delete note.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    getString(R.string.delete_note_failure), Toast.LENGTH_SHORT).show()
             }
         }
     }

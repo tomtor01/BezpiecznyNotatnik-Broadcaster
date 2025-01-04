@@ -1,4 +1,7 @@
-package com.example.bezpiecznynotatnik
+package com.example.bezpiecznynotatnik.activities
+
+import android.annotation.SuppressLint
+import com.example.bezpiecznynotatnik.utils.*
 
 import android.content.Context
 import android.content.Intent
@@ -8,18 +11,14 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.bezpiecznynotatnik.activities.AccessActivity
-import com.example.bezpiecznynotatnik.activities.PasswordSetupActivity
-import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
-import com.example.bezpiecznynotatnik.utils.EncryptionUtil
-import com.example.bezpiecznynotatnik.utils.HashUtil
-import com.example.bezpiecznynotatnik.utils.LocaleHelper
-import com.example.bezpiecznynotatnik.utils.PreferenceHelper
+import com.example.bezpiecznynotatnik.R
+
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -39,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -73,7 +73,6 @@ class MainActivity : AppCompatActivity() {
     private fun authenticateWithPassword() {
         val enteredPassword = passwordInput.text.toString()
         if (enteredPassword.isEmpty()) {
-            Toast.makeText(this, "Hasło nie może być puste.", Toast.LENGTH_SHORT).show()
             return
         }
         try {
@@ -102,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.e("MainActivity", "Error authenticating with password: ${e.message}", e)
-            Toast.makeText(this, "Authentication error.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.authentication_error), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -117,24 +116,25 @@ class MainActivity : AppCompatActivity() {
 
         val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                Toast.makeText(this@MainActivity, "Uwierzytelnianie zakończone sukcesem!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.logged_in), Toast.LENGTH_SHORT).show()
                 navigateToAccessActivity()
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(this@MainActivity, "Błąd: $errString", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity,
+                    getString(R.string.error, errString), Toast.LENGTH_SHORT).show()
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Toast.makeText(this@MainActivity, "Spróbuj ponownie", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
             }
         })
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Aby przejrzeć notatki, musisz potwierdzić tożsamość")
-            .setNegativeButtonText("Zamknij")
+            .setTitle(getString(R.string.biometric_prompt))
+            .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    @SuppressLint("StringFormatMatches")
     private fun handleFailedAttempt(currentAttempt: Int) {
         val newAttemptCount = currentAttempt + 1
         sharedPrefs.edit().putInt("attemptCounter", newAttemptCount).apply()
@@ -158,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(
                 this,
-                "Błędne hasło! Próby: $attempt.",
+                getString(R.string.wrong_password, attempt),
                 Toast.LENGTH_SHORT
             ).show()
             passwordInput.text.clear()
@@ -170,15 +171,13 @@ class MainActivity : AppCompatActivity() {
             .remove("passwordHash")
             .remove("iv")
             .remove("password_salt")
-            .remove("encryptedMessage")
-            .remove("messageIv")
             .putInt("attemptCounter", 0)
             .apply()
 
         // Pop-up
         AlertDialog.Builder(this)
-            .setTitle("Reset hasła")
-            .setMessage("Hasło oraz notatka zostały skasowane.")
+            .setTitle(getString(R.string.reset_dialog_tittle))
+            .setMessage(getString(R.string.reset_dialog_text))
             .setPositiveButton("OK") { _, _ ->
                 val intent = Intent(this, PasswordSetupActivity::class.java)
                 startActivity(intent)

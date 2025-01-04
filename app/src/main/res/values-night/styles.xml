@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.AppTheme" parent="Theme.Material3.Dark">
+    <style name="AppTheme" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorPrimaryVariant">@color/md_theme_surfaceVariant</item>
+        <item name="android:statusBarColor">@color/md_theme_surfaceVariant</item>"
         <item name="colorSecondary">@color/md_theme_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
         <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
@@ -44,7 +46,7 @@
         <item name="colorSurfaceBright">@color/md_theme_surfaceBright</item>
         <item name="colorSurfaceContainerLowest">@color/md_theme_surfaceContainerLowest</item>
         <item name="colorSurfaceContainerLow">@color/md_theme_surfaceContainerLow</item>
-        <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainer">@color/md_theme_background</item>          <!-- label and navigation view color -->
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>

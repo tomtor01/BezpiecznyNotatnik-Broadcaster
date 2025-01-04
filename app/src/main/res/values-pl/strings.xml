@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bezpieczny notatnik</string>
+    <string name="app_name">Secure Notebook</string>
     <string name="enter_password">Wpisz hasło</string>
     <string name="enter_new_password">Wpisz nowe hasło</string>
     <string name="use_biometric">Użyj biometrii</string>
     <string name="submit">Zatwierdź</string>
     <string name="log_in_text">Zaloguj się</string>
-    <string name="enter_new_note">Wpisz tekst…</string>
+    <string name="enter_new_note">Napisz coś…</string>
     <string name="save_note">Zapisz notatkę</string>
     <string name="delete_message">Usuń notatkę</string>
     <string name="logout">Wyjście</string>
@@ -14,7 +14,7 @@
     <string name="set_password">Ustaw hasło</string>
     <string name="change_password">Zmień hasło</string>
     <string name="cancel">Anuluj</string>
-    <string name="add_note">Dodaj</string>
+    <string name="create">Notuj</string>
     <string name="edit_note">Edytuj</string>
     <string name="see_notes">Notatki</string>
     <string name="go_back">Powrót</string>
@@ -22,6 +22,30 @@
     <string name="confirm_new_password">Powtórz nowe hasło</string>
     <string name="choose_language">Zmień język</string>
     <string name="apply">Potwierdź</string>
+    <string name="delete_note_dialog_text">Potwierdzasz chęć usunięcia notatki?</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="delete_note_dialog_tittle">Usuwanie notatki</string>
+    <string name="save_note_failure">Wystąpił błąd przy zapisywaniu notatki</string>
+    <string name="note_updated">Zapisano notatkę!</string>
+    <string name="note_deleted">Notatka usunięta!</string>
+    <string name="delete_note_failure">Wystąpił błąd przy usuwaniu notatki</string>
+    <string name="note_added">Notatka dodana!</string>
+    <string name="add_note_failure">Wystąpił błąd przy dodawaniu notatki</string>
+    <string name="reset_dialog_tittle">Reset</string>
+    <string name="reset_dialog_text">Hasło zresetowane. Notatki zostały bezpowrotnie utracone!</string>
+    <string name="wrong_password">Błędne hasło! Pozostałe próby: %1$s.</string>
+    <string name="try_again">Spróbuj ponownie</string>
+    <string name="logged_in">Zalogowano!</string>
+    <string name="biometric_prompt">Aby się zalogować, zidentyfikuj się odciskiem palca</string>
+    <string name="error">Błąd: %1$s</string>
+    <string name="logged_out">Wylogowano</string>
+    <string name="language_changed">Zmieniono język na %1$d</string>
+    <string name="not_equal_passwords">Wpisz dwa razy to samo hasło!</string>
+    <string name="password_set">Ustawiono hasło!</string>
+    <string name="set_password_failure">Wystąpił błąd przy ustawianiu hasła</string>
+    <string name="password_changed">Hasło zostało zmienione</string>
+    <string name="authentication_error">Wystąpił błąd przy identyfikacji</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

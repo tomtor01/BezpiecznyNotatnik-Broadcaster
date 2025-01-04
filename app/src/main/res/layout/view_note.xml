@@ -6,8 +6,7 @@
     android:orientation="horizontal"
     android:background="@drawable/note_background"
     android:padding="16dp"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginTop="16dp"> <!-- Ensure consistent margin -->
+    android:layout_margin="8dp"> <!-- Ensure consistent margin -->
 
     <TextView
         android:id="@+id/noteContent"

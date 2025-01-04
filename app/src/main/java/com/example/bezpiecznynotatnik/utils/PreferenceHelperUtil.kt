@@ -9,7 +9,9 @@ object PreferenceHelper {
 
     fun setLanguage(context: Context, languageCode: String) {
         prefs = context.getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_LANGUAGE, languageCode).apply()
+        prefs.edit()
+            .putString(KEY_LANGUAGE, languageCode)
+            .apply()
     }
 
     fun getLanguage(context: Context?): String? {

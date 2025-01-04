@@ -1,10 +1,11 @@
 package com.example.bezpiecznynotatnik
 
+import com.example.bezpiecznynotatnik.utils.LocaleHelper
+import com.example.bezpiecznynotatnik.utils.PreferenceHelper
+
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.bezpiecznynotatnik.utils.LocaleHelper
-import com.example.bezpiecznynotatnik.utils.PreferenceHelper
 
 class SecureNotesApp : Application() {
 

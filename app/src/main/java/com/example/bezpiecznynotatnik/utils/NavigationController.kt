@@ -1,5 +1,9 @@
 package com.example.bezpiecznynotatnik.utils
 
+import com.example.bezpiecznynotatnik.activities.MainActivity
+import com.example.bezpiecznynotatnik.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,9 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import com.example.bezpiecznynotatnik.MainActivity
-import com.example.bezpiecznynotatnik.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 abstract class NavigationController : AppCompatActivity() {
 
@@ -60,8 +61,8 @@ abstract class NavigationController : AppCompatActivity() {
                     )
                     true
                 }
-                R.id.nav_addNote -> {
-                    findNavController(R.id.nav_host_fragment).navigate(R.id.nav_addNote)
+                R.id.nav_create -> {
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.nav_create)
                     true
                 }
                 R.id.nav_settings -> {
@@ -75,7 +76,7 @@ abstract class NavigationController : AppCompatActivity() {
 
     private fun performLogout() {
         // Add your logout logic here
-        Toast.makeText(this, "Logged out!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

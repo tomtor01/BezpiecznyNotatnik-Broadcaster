@@ -13,7 +13,7 @@
     <string name="set_password">Set password</string>
     <string name="change_password">Change password</string>
     <string name="cancel">Cancel</string>
-    <string name="add_note">Add note</string>
+    <string name="create">Write</string>
     <string name="edit_note">Edit</string>
     <string name="see_notes">Your notes</string>
     <string name="go_back">Back</string>
@@ -21,6 +21,30 @@
     <string name="confirm_new_password">Repeat new password</string>
     <string name="choose_language">Change language</string>
     <string name="apply">Apply</string>
+    <string name="delete_note_dialog_text">Are you sure you want to delete this note?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="delete_note_dialog_tittle">Note removal</string>
+    <string name="save_note_failure">Failed to save note</string>
+    <string name="note_updated">Note saved!</string>
+    <string name="note_deleted">Note deleted!</string>
+    <string name="delete_note_failure">Error occurred while deleting the note</string>
+    <string name="note_added">New note added!</string>
+    <string name="add_note_failure">Error occurred while adding the note</string>
+    <string name="reset_dialog_tittle">Reset</string>
+    <string name="reset_dialog_text">Password reset. All notes have been lost permanently!</string>
+    <string name="wrong_password">Wrong password! Attempts left: %1$d.</string>
+    <string name="try_again">Try again!</string>
+    <string name="logged_in">Logged in!</string>
+    <string name="biometric_prompt">To log in, tap the fingerprint sensor</string>
+    <string name="error">Error: %1$s</string>
+    <string name="logged_out">Logged out!</string>
+    <string name="language_changed">Language changed to %1$s</string>
+    <string name="not_equal_passwords">Passwords do not match!</string>
+    <string name="password_set">Password is set</string>
+    <string name="set_password_failure">Error occurred while setting password</string>
+    <string name="password_changed">New password is set</string>
+    <string name="authentication_error">Authentication error</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>
