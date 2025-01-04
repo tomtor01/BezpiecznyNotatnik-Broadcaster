@@ -1,14 +1,13 @@
 package com.example.bezpiecznynotatnik.utils
 
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.bezpiecznynotatnik.R
+
+import android.widget.Toast
 import java.security.MessageDigest
 import java.security.SecureRandom
 import android.content.SharedPreferences
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getString
 
 private lateinit var sharedPrefs: SharedPreferences

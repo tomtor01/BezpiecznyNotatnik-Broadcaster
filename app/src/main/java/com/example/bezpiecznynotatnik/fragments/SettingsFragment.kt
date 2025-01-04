@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +14,6 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.fragment.app.Fragment
 
 class SettingsFragment : Fragment() {
@@ -24,7 +21,6 @@ class SettingsFragment : Fragment() {
     private lateinit var changePasswordButton: Button
     private lateinit var languageSpinner: Spinner
     private lateinit var applyLanguageButton: Button
-    private lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +31,6 @@ class SettingsFragment : Fragment() {
         changePasswordButton = view.findViewById(R.id.changePasswordButton)
         languageSpinner = view.findViewById(R.id.language_spinner)
         applyLanguageButton = view.findViewById(R.id.apply_language_button)
-        //sharedPrefs = requireContext().getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
 
         setupLanguageSpinner()
 
