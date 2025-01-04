@@ -34,13 +34,13 @@
     <string name="add_note_failure">Wystąpił błąd przy dodawaniu notatki</string>
     <string name="reset_dialog_tittle">Reset</string>
     <string name="reset_dialog_text">Hasło zresetowane. Notatki zostały bezpowrotnie utracone!</string>
-    <string name="wrong_password">Błędne hasło! Pozostałe próby: %1$s.</string>
+    <string name="wrong_password">Błędne hasło! Pozostałe próby: %1$d.</string>
     <string name="try_again">Spróbuj ponownie</string>
     <string name="logged_in">Zalogowano!</string>
     <string name="biometric_prompt">Aby się zalogować, zidentyfikuj się odciskiem palca</string>
     <string name="error">Błąd: %1$s</string>
     <string name="logged_out">Wylogowano</string>
-    <string name="language_changed">Zmieniono język na %1$d</string>
+    <string name="language_changed">Language changed to %1$s</string>
     <string name="not_equal_passwords">Wpisz dwa razy to samo hasło!</string>
     <string name="password_set">Ustawiono hasło!</string>
     <string name="set_password_failure">Wystąpił błąd przy ustawianiu hasła</string>

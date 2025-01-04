@@ -149,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    @SuppressLint("StringFormatMatches")
     private fun handleFailedAttempt(currentAttempt: Int) {
         val newAttemptCount = currentAttempt + 1
         sharedPrefs.edit().putInt("attemptCounter", newAttemptCount).apply()

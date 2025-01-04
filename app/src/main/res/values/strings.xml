@@ -39,7 +39,7 @@
     <string name="biometric_prompt">To log in, tap the fingerprint sensor</string>
     <string name="error">Error: %1$s</string>
     <string name="logged_out">Logged out!</string>
-    <string name="language_changed">Language changed to %1$s</string>
+    <string name="language_changed">Zmieniono język na %1$s</string>
     <string name="not_equal_passwords">Passwords do not match!</string>
     <string name="password_set">Password is set</string>
     <string name="set_password_failure">Error occurred while setting password</string>
