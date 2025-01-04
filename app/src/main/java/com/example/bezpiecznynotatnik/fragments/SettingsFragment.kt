@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import android.annotation.SuppressLint
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 
@@ -61,7 +60,6 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    @SuppressLint("StringFormatMatches")
     private fun applySelectedLanguage() {
         val languageCodes = resources.getStringArray(R.array.language_codes)
         val selectedPosition = languageSpinner.selectedItemPosition

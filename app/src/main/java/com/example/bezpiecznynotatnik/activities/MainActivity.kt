@@ -1,6 +1,7 @@
 package com.example.bezpiecznynotatnik.activities
 
-import android.annotation.SuppressLint
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.utils.*
 
 import android.content.Context
@@ -17,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.bezpiecznynotatnik.R
 
 import java.util.Locale
 
@@ -144,6 +144,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToAccessActivity() {
+        (application as SecureNotesApp).isUserLoggedIn = true
         val intent = Intent(this, AccessActivity::class.java)
         startActivity(intent)
         finish()

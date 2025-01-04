@@ -61,7 +61,7 @@ class EditNoteFragment : Fragment() {
         editNoteInput.setText(originalNoteContent)
 
         // Set up TextWatcher for input field
-        setupTextWatcher()
+        editedTextWatcher()
 
         // Set up Save button
         saveButton.setOnClickListener { updateNote() }
@@ -82,12 +82,11 @@ class EditNoteFragment : Fragment() {
         resetInputField()
     }
 
-    private fun setupTextWatcher() {
+    private fun editedTextWatcher() {
         editNoteInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val hasChanged = s.toString() != originalNoteContent
-                saveButton.isEnabled = hasChanged
                 saveButton.isEnabled = hasChanged
                 val (backgroundTintList, textColor) = if (hasChanged) {
                     ContextCompat.getColorStateList(requireContext(), R.color.md_theme_primary) to

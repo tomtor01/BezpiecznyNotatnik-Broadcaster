@@ -42,7 +42,7 @@ class AddNoteFragment : Fragment() {
         saveButton = view.findViewById(R.id.saveButton)
         noteDao = (requireActivity().application as SecureNotesApp).noteDatabase.noteDao()
 
-        setupTextWatcher()
+        addedTextWatcher()
         setupSaveButton()
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
@@ -50,7 +50,6 @@ class AddNoteFragment : Fragment() {
             v.setPadding(16, 16, 16, imeInsets.bottom + 16) // Adjust bottom padding dynamically
             insets
         }
-
         return view
     }
 
@@ -59,7 +58,7 @@ class AddNoteFragment : Fragment() {
         resetInputField()
     }
 
-    private fun setupTextWatcher() {
+    private fun addedTextWatcher() {
         noteInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {

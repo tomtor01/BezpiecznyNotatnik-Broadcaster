@@ -1,16 +1,18 @@
 package com.example.bezpiecznynotatnik.activities
 
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.utils.LocaleHelper
 import com.example.bezpiecznynotatnik.utils.NavigationController
 import com.example.bezpiecznynotatnik.utils.PreferenceHelper
+
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.bezpiecznynotatnik.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 import java.util.Locale
 
@@ -38,6 +40,11 @@ class AccessActivity : NavigationController() {
 
         // Link BottomNavigationView with NavController
         bottomNavigationView.setupWithNavController(navController)
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        (application as SecureNotesApp).resetLogoutTimer()
     }
 }
 

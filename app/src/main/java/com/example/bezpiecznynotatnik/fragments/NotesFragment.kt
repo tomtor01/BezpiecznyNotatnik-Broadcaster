@@ -1,5 +1,12 @@
 package com.example.bezpiecznynotatnik.fragments
 
+import com.example.bezpiecznynotatnik.NoteDao
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.SecureNotesApp
+import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
+import com.example.bezpiecznynotatnik.utils.EncryptionUtil
+import com.example.bezpiecznynotatnik.utils.NotesAdapter
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bezpiecznynotatnik.NoteDao
-import com.example.bezpiecznynotatnik.R
-import com.example.bezpiecznynotatnik.SecureNotesApp
-import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
-import com.example.bezpiecznynotatnik.utils.EncryptionUtil
-import com.example.bezpiecznynotatnik.utils.NotesAdapter
 import kotlinx.coroutines.launch
 
 class NotesFragment : Fragment() {
