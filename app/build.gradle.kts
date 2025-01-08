@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlinKsp)
     alias(libs.plugins.kotlin.compose)
     id("androidx.navigation.safeargs")
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -41,6 +43,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
+        viewBinding = true
         compose = true
     }
     composeOptions {
@@ -61,6 +64,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.graphics.android)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.constraintlayout)
@@ -76,6 +80,11 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.ui.graphics.android)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.play.services.auth)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

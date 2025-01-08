@@ -46,9 +46,24 @@ class AccessActivity : NavigationController() {
         super.onStop()
         (application as SecureNotesApp).scheduleLogoutWork()
     }
-
     override fun onStart() {
         super.onStart()
+        (application as SecureNotesApp).cancelLogoutWork()
+    }
+    override fun onRestart() {
+        super.onRestart()
+        (application as SecureNotesApp).cancelLogoutWork()
+    }
+    override fun onResume() {
+        super.onResume()
+        (application as SecureNotesApp).cancelLogoutWork()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        (application as SecureNotesApp).cancelLogoutWork()
+    }
+    override fun onPause() {
+        super.onPause()
         (application as SecureNotesApp).cancelLogoutWork()
     }
 }

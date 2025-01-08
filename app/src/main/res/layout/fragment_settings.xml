@@ -20,13 +20,13 @@
         tools:ignore="VisualLintButtonSize" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/language_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/note_background"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/changePasswordButton"
-        tools:layout_editor_absoluteX="16dp">
+        app:layout_constraintTop_toBottomOf="@id/changePasswordButton">
 
         <TextView
             android:id="@+id/language_text"
@@ -65,6 +65,36 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="230dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/note_background"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/language_layout">
+
+        <TextView
+            android:id="@+id/link_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/link_account"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/linkEmailButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/link_email"
+            app:layout_constraintTop_toBottomOf="@id/link_account"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

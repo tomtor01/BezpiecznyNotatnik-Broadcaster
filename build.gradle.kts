@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlinKsp) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.google.gms.google.services) apply false
+    alias(libs.plugins.google.firebase.crashlytics) apply false
 }
 
 buildscript {
@@ -13,5 +15,6 @@ buildscript {
     }
     dependencies {
         classpath (libs.androidx.navigation.safe.args.gradle.plugin.v260)
+        classpath (libs.google.services)
     }
 }

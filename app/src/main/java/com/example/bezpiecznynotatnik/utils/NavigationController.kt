@@ -35,7 +35,11 @@ abstract class NavigationController : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.logoutButton -> {
-                performLogout()
+                //MainActivity().performLogout()
+                Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -74,11 +78,5 @@ abstract class NavigationController : AppCompatActivity() {
         }
     }
 
-    private fun performLogout() {
-        // Add your logout logic here
-        Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
+
 }

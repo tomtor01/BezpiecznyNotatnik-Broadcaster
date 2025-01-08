@@ -1,5 +1,7 @@
 package com.example.bezpiecznynotatnik.fragments
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 
@@ -14,12 +16,17 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class SettingsFragment : Fragment() {
 
     private lateinit var changePasswordButton: Button
     private lateinit var languageSpinner: Spinner
     private lateinit var applyLanguageButton: Button
+    private lateinit var linkEmailButton: Button
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +39,12 @@ class SettingsFragment : Fragment() {
         applyLanguageButton = view.findViewById(R.id.apply_language_button)
 
         setupLanguageSpinner()
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        linkEmailButton = view.findViewById(R.id.linkEmailButton)
+        linkEmailButton.setOnClickListener {
+
+        }
 
         changePasswordButton.setOnClickListener {
             showChangePasswordDialog()
@@ -116,4 +129,20 @@ class SettingsFragment : Fragment() {
         }
         dialog.show()
     }
+
+//    private fun linkEmailToUser(user: FirebaseUser, credential: AuthCredential) {
+//        val currentUser = firebaseAuth.currentUser
+//        if (currentUser != null) {
+//            currentUser.linkWithCredential(credential)
+//                .addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        Toast.makeText(requireContext(), "Email linked successfully!", Toast.LENGTH_SHORT).show()
+//                    } else {
+//                        Toast.makeText(requireContext(), "Failed to link email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//        } else {
+//            Toast.makeText(requireContext(), "No authenticated user found to link email.", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 }

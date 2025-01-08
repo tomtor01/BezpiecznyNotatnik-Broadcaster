@@ -1,5 +1,6 @@
 package com.example.bezpiecznynotatnik.activities
 
+import android.app.Activity
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 
@@ -51,7 +52,6 @@ class PasswordSetupActivity : AppCompatActivity() {
             } else if (newPassword != repeatPassword) {
                 Toast.makeText(this,
                     getString(R.string.not_equal_passwords), Toast.LENGTH_SHORT).show()
-                newPasswordInput.text.clear()
                 repeatPasswordInput.text.clear()
             } else {
                 // Call changePassword and dismiss dialog on success

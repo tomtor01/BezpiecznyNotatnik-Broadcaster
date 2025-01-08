@@ -8,6 +8,8 @@ import com.example.bezpiecznynotatnik.utils.LogoutWorker
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.annotation.RestrictTo
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.room.Room
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager

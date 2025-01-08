@@ -7,9 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannedString
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -17,14 +23,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var passwordInput: EditText
     private lateinit var loginWithPasswordButton: Button
     private lateinit var loginWithBiometricsButton: Button
+    private lateinit var forgotPassword: TextView
     private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var auth: FirebaseAuth
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase == null) {
@@ -42,9 +55,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         passwordInput = findViewById(R.id.passwordInput)
+        forgotPassword = findViewById(R.id.forgot_password)
         loginWithPasswordButton = findViewById(R.id.loginWithPasswordButton)
         loginWithBiometricsButton = findViewById(R.id.loginWithBiometricsButton)
         sharedPrefs = getSharedPreferences("SecureNotesPrefs", MODE_PRIVATE)
+        auth = FirebaseAuth.getInstance()
+
+        val spanString = SpannableString(getString(R.string.forgot_password))
+        val forgotPasswordText = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                //showPasswordResetDialog()
+            }
+        }
+        spanString.setSpan(forgotPasswordText, 0, spanString.length, SpannedString.SPAN_EXCLUSIVE_EXCLUSIVE)
+        forgotPassword.text = spanString
+        forgotPassword.movementMethod = LinkMovementMethod.getInstance()
 
         val saltBase64 = sharedPrefs.getString("password_salt", null)
         val encryptedHashBase64 = sharedPrefs.getString("passwordHash", null)
@@ -55,11 +80,33 @@ class MainActivity : AppCompatActivity() {
             redirectToPasswordSetup()
             return
         }
+
         loginWithPasswordButton.setOnClickListener {
             authenticateWithPassword()
         }
         loginWithBiometricsButton.setOnClickListener {
             authenticateWithBiometrics()
+        }
+    }
+
+    private fun anonymousAuth() {
+        val currentUser = auth.currentUser
+        if (currentUser != null && currentUser.isAnonymous) {
+            // Reuse existing anonymous user
+            Log.d("MainActivity", "Reusing existing anonymous user: ${currentUser.uid}")
+            navigateToAccessActivity()
+        } else {
+            // Sign in anonymously
+            auth.signInAnonymously()
+                .addOnSuccessListener {
+                    val user = it.user
+                    Log.d("MainActivity", "Anonymous authentication succeeded for user ID: ${user?.uid}")
+                    navigateToAccessActivity()
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("MainActivity", "Anonymous authentication failed: ${exception.message}")
+                    Toast.makeText(this, "Authentication failed. Please try again.", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
@@ -92,9 +139,9 @@ class MainActivity : AppCompatActivity() {
 
             val decryptedHash = EncryptionUtil.decryptHash(storedIv, storedEncryptedHash)
             if (hashedPassword.contentEquals(decryptedHash)) {
+                anonymousAuth()
                 sharedPrefs.edit().putInt("attemptCounter", 0)
                     .apply() // Reset the counter on success
-                navigateToAccessActivity()
             } else {
                 handleFailedAttempt(attemptCounter)
             }
@@ -115,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 Toast.makeText(this@MainActivity, getString(R.string.logged_in), Toast.LENGTH_SHORT).show()
-                navigateToAccessActivity()
+                anonymousAuth()
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -139,6 +186,10 @@ class MainActivity : AppCompatActivity() {
         val cipher = EncryptionUtil.getInitializedCipherForEncryption()
         val cryptoObject = BiometricPrompt.CryptoObject(cipher)
         biometricPrompt.authenticate(promptInfo, cryptoObject)
+    }
+
+    fun performLogout() {
+        Firebase.auth.signOut()
     }
 
     private fun navigateToAccessActivity() {

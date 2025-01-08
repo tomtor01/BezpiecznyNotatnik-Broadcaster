@@ -46,6 +46,9 @@
     <string name="set_password_failure">Wystąpił błąd przy ustawianiu hasła</string>
     <string name="password_changed">Hasło zostało zmienione</string>
     <string name="authentication_error">Wystąpił błąd przy identyfikacji</string>
+    <string name="forgot_password">forgot password?</string>
+    <string name="link_account">Powiąż z zewnętrznym kontem</string>
+    <string name="link_email">Powiąż email</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>
