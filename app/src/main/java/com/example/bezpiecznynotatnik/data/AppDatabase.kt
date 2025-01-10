@@ -1,5 +1,6 @@
 package com.example.bezpiecznynotatnik.data
 
+import android.util.Log
 import androidx.room.*
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
@@ -27,4 +28,7 @@ interface NoteDao {
 
     @Query("DELETE FROM notes WHERE id = :noteId")
     suspend fun deleteById(noteId: Int)
+
+    @Query("DELETE FROM notes")
+    suspend fun deleteAllNotes()
 }

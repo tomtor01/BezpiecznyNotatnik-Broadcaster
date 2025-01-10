@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Secure Notebook</string>
+    <string name="app_name">NoteLocker</string>
     <string name="enter_password">Enter password</string>
     <string name="enter_new_password">Enter new password</string>
     <string name="use_biometric">Use biometry</string>
@@ -45,9 +45,11 @@
     <string name="set_password_failure">Error occurred while setting password</string>
     <string name="password_changed">New password is set</string>
     <string name="authentication_error">Authentication error</string>
-    <string name="forgot_password">forgot password?</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="link_account">Powiąż z zewnętrznym kontem</string>
     <string name="link_email">Powiąż email</string>
+    <string name="account">Account</string>
+    <string name="web_client_id">368501999338-d7to8bnbha5v4iordgk1jkokfui23ftm.apps.googleusercontent.com</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

@@ -44,7 +44,8 @@ class EditNoteFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_edit_note, container, false)
@@ -56,6 +57,7 @@ class EditNoteFragment : Fragment() {
         // Get arguments from navigation
         noteId = arguments?.getInt("noteId") ?: -1
         originalNoteContent = arguments?.getString("noteContent") ?: ""
+        arguments = null
 
         // Initialize the input field with the original note content
         editNoteInput.setText(originalNoteContent)
@@ -125,7 +127,7 @@ class EditNoteFragment : Fragment() {
 
                     Toast.makeText(requireContext(),
                         getString(R.string.note_updated), Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
+                    findNavController().navigate(R.id.nav_notesView)
                 } catch (e: Exception) {
                     Log.e("EditNoteFragment", "Error saving note: ${e.message}")
                     Toast.makeText(requireContext(),
@@ -151,7 +153,7 @@ class EditNoteFragment : Fragment() {
                 noteDao.deleteById(noteId)
                 Toast.makeText(requireContext(),
                     getString(R.string.note_deleted), Toast.LENGTH_SHORT).show()
-                findNavController().navigateUp()
+                findNavController().navigate(R.id.nav_notesView)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(),
                     getString(R.string.delete_note_failure), Toast.LENGTH_SHORT).show()

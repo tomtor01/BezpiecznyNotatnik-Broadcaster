@@ -24,7 +24,8 @@ class NotesFragment : Fragment() {
     private lateinit var noteDao: NoteDao
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_notes, container, false)
@@ -39,7 +40,9 @@ class NotesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
     }
+
 
     private fun loadNotes() {
         lifecycleScope.launch {
@@ -57,8 +60,8 @@ class NotesFragment : Fragment() {
             }
 
             adapter = NotesAdapter(
-                decryptedNotes,
-                notes,
+                decryptedNotes.toMutableList(),
+                notes.toMutableList(),
                 onEditNote = { note ->
                     val action = NotesFragmentDirections.actionNavNotesViewToNavEditNote(
                         note.id, decryptedNotes[notes.indexOf(note)]
@@ -66,6 +69,7 @@ class NotesFragment : Fragment() {
                     findNavController().navigate(action)
                 }
             )
+
             recyclerView.adapter = adapter
         }
     }

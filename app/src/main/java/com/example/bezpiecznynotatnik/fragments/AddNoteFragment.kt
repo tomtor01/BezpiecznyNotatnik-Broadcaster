@@ -33,7 +33,8 @@ class AddNoteFragment : Fragment() {
     private lateinit var noteDao: NoteDao
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_add_note, container, false)

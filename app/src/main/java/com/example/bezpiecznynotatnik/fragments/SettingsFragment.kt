@@ -1,7 +1,5 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 
@@ -16,9 +14,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class SettingsFragment : Fragment() {
 
@@ -29,7 +25,8 @@ class SettingsFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)

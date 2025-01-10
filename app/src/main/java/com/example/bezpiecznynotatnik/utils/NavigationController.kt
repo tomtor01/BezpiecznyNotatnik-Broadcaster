@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import com.example.bezpiecznynotatnik.activities.AccountActivity
 
 abstract class NavigationController : AppCompatActivity() {
 
@@ -25,8 +26,12 @@ abstract class NavigationController : AppCompatActivity() {
         menuInflater.inflate(R.menu.action_bar, menu)
 
         val logoutItem = menu.findItem(R.id.logoutButton)
+        val accountItem = menu.findItem(R.id.accountButton)
 
         logoutItem.icon?.setTintList(
+            ContextCompat.getColorStateList(this, R.color.md_theme_primary)
+        )
+        accountItem.icon?.setTintList(
             ContextCompat.getColorStateList(this, R.color.md_theme_primary)
         )
         return true
@@ -35,15 +40,28 @@ abstract class NavigationController : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.logoutButton -> {
-                //MainActivity().performLogout()
-                Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                handleLogout()
+                true
+            }
+            R.id.accountButton -> {
+                openAccountSettings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun handleLogout() {
+        Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun openAccountSettings() {
+        val intent = Intent(this, AccountActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun setupNavigationBar() {
@@ -77,6 +95,4 @@ abstract class NavigationController : AppCompatActivity() {
             }
         }
     }
-
-
 }

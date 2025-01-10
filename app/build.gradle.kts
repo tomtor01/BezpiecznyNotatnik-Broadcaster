@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlinKsp)
     alias(libs.plugins.kotlin.compose)
     id("androidx.navigation.safeargs")
+    id("com.google.dagger.hilt.android")
+    //id("androidx.room")
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
 }
@@ -23,6 +25,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
     buildTypes {
@@ -52,8 +55,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            resources.pickFirsts += "/META-INF/DEPENDENCIES"
         }
     }
+//    room {
+//        schemaDirectory("$projectDir/schemas")
+//    }
 }
 
 dependencies {
@@ -85,7 +92,14 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.auth)
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.api.client)
+    implementation(libs.google.oauth.client.jetty)
+    implementation(libs.google.auth.library.oauth2.http)
+    implementation(libs.hilt.android)
     ksp(libs.androidx.room.compiler)
+    ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

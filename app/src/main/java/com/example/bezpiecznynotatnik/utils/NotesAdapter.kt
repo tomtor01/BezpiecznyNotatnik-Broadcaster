@@ -10,8 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class NotesAdapter(
-    private val decryptedNotes: List<String>,
-    private val originalNotes: List<Note>,
+    private val decryptedNotes: MutableList<String> = mutableListOf(),
+    private val originalNotes: MutableList<Note> = mutableListOf(),
     private val onEditNote: (Note) -> Unit ) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {

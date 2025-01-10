@@ -2,6 +2,7 @@ package com.example.bezpiecznynotatnik.activities
 
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
+import com.example.bezpiecznynotatnik.data.NoteDao
 
 import android.content.Context
 import android.content.Intent
@@ -23,10 +24,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.bezpiecznynotatnik.SecureNotesApp
+import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 import java.util.Locale
 
@@ -37,7 +41,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginWithBiometricsButton: Button
     private lateinit var forgotPassword: TextView
     private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var noteDao: NoteDao
     private lateinit var auth: FirebaseAuth
+    private lateinit var googleDriveManager: GoogleDriveBackupManager
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase == null) {
@@ -80,6 +86,8 @@ class MainActivity : AppCompatActivity() {
             redirectToPasswordSetup()
             return
         }
+        googleDriveManager = GoogleDriveBackupManager()
+        googleDriveManager.initializeGoogleSignIn()
 
         loginWithPasswordButton.setOnClickListener {
             authenticateWithPassword()
@@ -95,6 +103,14 @@ class MainActivity : AppCompatActivity() {
             // Reuse existing anonymous user
             Log.d("MainActivity", "Reusing existing anonymous user: ${currentUser.uid}")
             navigateToAccessActivity()
+            googleDriveManager.silentSignIn(
+                onSuccess = {
+                    Toast.makeText(this@MainActivity, "Automatically signed in to Google Drive!", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = { errorMessage ->
+                    Log.w("AccountActivity", "Silent sign-in failed: $errorMessage")
+                }
+            )
         } else {
             // Sign in anonymously
             auth.signInAnonymously()
@@ -188,7 +204,7 @@ class MainActivity : AppCompatActivity() {
         biometricPrompt.authenticate(promptInfo, cryptoObject)
     }
 
-    fun performLogout() {
+    fun performLogout(context: Context) {
         Firebase.auth.signOut()
     }
 
@@ -221,8 +237,14 @@ class MainActivity : AppCompatActivity() {
             .remove("password_salt")
             .putInt("attemptCounter", 0)
             .apply()
-
-        // Pop-up
+        lifecycleScope.launch {
+            try {
+                noteDao = (application as SecureNotesApp).noteDatabase.noteDao()
+                noteDao.deleteAllNotes()
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error resetting password: ${e.message}")
+            }
+        }
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.reset_dialog_tittle))
             .setMessage(getString(R.string.reset_dialog_text))
