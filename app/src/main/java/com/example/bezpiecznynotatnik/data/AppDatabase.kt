@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik.data
 
-import android.util.Log
 import androidx.room.*
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)

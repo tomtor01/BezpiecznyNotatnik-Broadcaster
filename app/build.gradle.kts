@@ -58,9 +58,6 @@ android {
             resources.pickFirsts += "/META-INF/DEPENDENCIES"
         }
     }
-//    room {
-//        schemaDirectory("$projectDir/schemas")
-//    }
 }
 
 dependencies {

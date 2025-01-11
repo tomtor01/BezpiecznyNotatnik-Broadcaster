@@ -86,8 +86,8 @@ class MainActivity : AppCompatActivity() {
             redirectToPasswordSetup()
             return
         }
-        googleDriveManager = GoogleDriveBackupManager()
-        googleDriveManager.initializeGoogleSignIn()
+        googleDriveManager = (application as SecureNotesApp).googleDriveManager
+        googleDriveManager.initializeGoogleSignIn(applicationContext)
 
         loginWithPasswordButton.setOnClickListener {
             authenticateWithPassword()
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             // Reuse existing anonymous user
             Log.d("MainActivity", "Reusing existing anonymous user: ${currentUser.uid}")
             navigateToAccessActivity()
-            googleDriveManager.silentSignIn(
+            googleDriveManager.silentSignIn(applicationContext,
                 onSuccess = {
                     Toast.makeText(this@MainActivity, "Automatically signed in to Google Drive!", Toast.LENGTH_SHORT).show()
                 },

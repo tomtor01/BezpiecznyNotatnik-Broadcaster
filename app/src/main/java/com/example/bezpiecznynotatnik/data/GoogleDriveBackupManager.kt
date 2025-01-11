@@ -1,10 +1,8 @@
 package com.example.bezpiecznynotatnik.data
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.room.Room
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
@@ -13,13 +11,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
-import com.google.api.services.drive.Drive
-import com.google.api.services.drive.DriveScopes
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
-import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -29,9 +27,8 @@ class GoogleDriveBackupManager {
 
     private var googleSignInClient: GoogleSignInClient? = null
     private var driveService: Drive? = null
-    private var context: Context = SecureNotesApp.applicationContext()
 
-    fun initializeGoogleSignIn() {
+    fun initializeGoogleSignIn(context: Context) {
         val clientId = context.getString(R.string.web_client_id)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(clientId)
@@ -46,11 +43,11 @@ class GoogleDriveBackupManager {
             ?: throw IllegalStateException("Google Sign-In client is not initialized.")
     }
 
-    fun silentSignIn(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    fun silentSignIn(context: Context, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         val account = GoogleSignIn.getLastSignedInAccount(context)
         if (account != null) {
             try {
-                initializeDriveService(account)
+                initializeDriveService(context, account)
                 onSuccess()
             } catch (e: Exception) {
                 onFailure("Failed to initialize Drive service: ${e.message}")
@@ -61,6 +58,7 @@ class GoogleDriveBackupManager {
     }
 
     fun handleSignInResult(
+        context: Context,
         data: Intent?,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
@@ -68,7 +66,7 @@ class GoogleDriveBackupManager {
         try {
             val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
             if (account != null) {
-                initializeDriveService(account)
+                initializeDriveService(context, account)
 //                val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 //                prefs.edit().putBoolean("is_signed_in", true).apply()
                 onSuccess()
@@ -80,7 +78,7 @@ class GoogleDriveBackupManager {
         }
     }
 
-    private fun initializeDriveService(account: GoogleSignInAccount) {
+    private fun initializeDriveService(context: Context, account: GoogleSignInAccount) {
         val credential = GoogleAccountCredential.usingOAuth2(
             context, listOf(DriveScopes.DRIVE_FILE)
         )
@@ -94,12 +92,12 @@ class GoogleDriveBackupManager {
         return driveService != null
     }
 
-    suspend fun uploadDatabase() {
+    suspend fun uploadDatabase(context: Context) {
         if (driveService == null) throw IllegalStateException("Drive service is not initialized.")
         try {
             val dbPath = context.getDatabasePath("notes_db")
-            val shmPath = File(dbPath.absolutePath + "-shm")
-            val walPath = File(dbPath.absolutePath + "-wal")
+            val shmPath = context.getDatabasePath("notes_db-shm")
+            val walPath = context.getDatabasePath("notes_db-wal")
 
             if (!dbPath.exists()) throw FileNotFoundException("Database file not found!")
 
@@ -107,8 +105,8 @@ class GoogleDriveBackupManager {
             uploadFileToDrive(dbPath, "notes_db")
 
             // Upload auxiliary files if they exist
-            if (shmPath.exists()) uploadFileToDrive(shmPath, "notes_db-shm")
-            if (walPath.exists()) uploadFileToDrive(walPath, "notes_db-wal")
+            uploadFileToDrive(shmPath, "notes_db-shm")
+            uploadFileToDrive(walPath, "notes_db-wal")
 
             Log.d("GoogleDriveManager", "All database files uploaded successfully!")
         } catch (e: Exception) {
@@ -117,13 +115,13 @@ class GoogleDriveBackupManager {
         }
     }
 
-    suspend fun downloadDatabase() {
+    suspend fun downloadDatabase(context: Context) {
         if (driveService == null) throw IllegalStateException("Drive service is not initialized.")
         try {
-            closeDatabase()
+            closeDatabase(context)
             val dbPath = context.getDatabasePath("notes_db")
-            val shmPath = File(dbPath.absolutePath + "-shm")
-            val walPath = File(dbPath.absolutePath + "-wal")
+            val shmPath = context.getDatabasePath("notes_db-shm")
+            val walPath = context.getDatabasePath("notes_db-wal")
 
             // Download the main database file
             downloadFileFromDrive("notes_db")?.copyTo(dbPath, overwrite = true)
@@ -131,7 +129,7 @@ class GoogleDriveBackupManager {
             // Download auxiliary files
             downloadFileFromDrive("notes_db-shm")?.copyTo(shmPath, overwrite = true)
             downloadFileFromDrive("notes_db-wal")?.copyTo(walPath, overwrite = true)
-            reloadDatabase()
+            reloadDatabase(context)
             Log.d("GoogleDriveManager", "Database restored successfully!")
         } catch (e: Exception) {
             Log.e("GoogleDriveManager", "Error restoring database files: ${e.message}")
@@ -140,11 +138,39 @@ class GoogleDriveBackupManager {
     }
 
     private suspend fun uploadFileToDrive(file: File, fileName: String) {
-        val metadata = com.google.api.services.drive.model.File().setName(fileName)
-        val fileContent = FileContent("application/octet-stream", file)
+        val existingFileId = findFileOnDrive(fileName)
 
-        withContext(Dispatchers.IO) {
-            driveService?.files()?.create(metadata, fileContent)?.execute()
+        if (existingFileId != null) {
+            // Update the existing file
+            val fileContent = FileContent("application/octet-stream", file)
+            withContext(Dispatchers.IO) {
+                driveService!!.files().update(existingFileId, null, fileContent).execute()
+            }
+            Log.d("GoogleDriveManager", "File $fileName updated successfully on Google Drive.")
+        } else {
+            // Create a new file
+            val metadata = com.google.api.services.drive.model.File().setName(fileName)
+            val fileContent = FileContent("application/octet-stream", file)
+            withContext(Dispatchers.IO) {
+                driveService!!.files().create(metadata, fileContent).execute()
+            }
+            Log.d("GoogleDriveManager", "File $fileName created successfully on Google Drive.")
+        }
+    }
+
+    private suspend fun findFileOnDrive(fileName: String): String? {
+        return try {
+            val result = withContext(Dispatchers.IO) {
+                driveService!!.files().list()
+                    .setQ("name='$fileName' and trashed=false") // Search by name and ignore trashed files
+                    .setSpaces("drive")
+                    .setFields("files(id, name)")
+                    .execute()
+            }
+            result.files.firstOrNull()?.id // Return the ID of the first matching file
+        } catch (e: Exception) {
+            Log.e("GoogleDriveManager", "Error finding file $fileName: ${e.message}")
+            null
         }
     }
 
@@ -160,7 +186,7 @@ class GoogleDriveBackupManager {
             val fileId = result?.files?.firstOrNull()?.id
             if (fileId != null) {
                 val tempFile = withContext(Dispatchers.IO) {
-                    File.createTempFile(fileName, null, context.cacheDir)
+                    File.createTempFile(fileName, null)
                 }
                 withContext(Dispatchers.IO) {
                     driveService?.files()?.get(fileId)?.executeMediaAndDownloadTo(tempFile.outputStream())
@@ -175,7 +201,7 @@ class GoogleDriveBackupManager {
             null
         }
     }
-    private fun closeDatabase() {
+    private fun closeDatabase(context: Context) {
         try {
             (context as SecureNotesApp).noteDatabase.close()
         } catch (e: Exception) {
@@ -186,7 +212,7 @@ class GoogleDriveBackupManager {
         File(dbPath.absolutePath + "-wal").delete()
     }
 
-    private fun reloadDatabase() {
+    private fun reloadDatabase(context: Context) {
         val app = context as SecureNotesApp
         app.noteDatabase = Room.databaseBuilder(
             context,

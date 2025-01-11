@@ -11,24 +11,14 @@ import android.util.Log
 import androidx.room.Room
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
 
 import java.util.concurrent.TimeUnit
 
 class SecureNotesApp : Application() {
 
     lateinit var noteDatabase: AppDatabase
-
-    init {
-        instance = this
-    }
-
-    companion object {
-        private var instance: SecureNotesApp? = null
-
-        fun applicationContext() : Context {
-            return instance!!.applicationContext
-        }
-    }
+    lateinit var googleDriveManager: GoogleDriveBackupManager
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -43,10 +33,14 @@ class SecureNotesApp : Application() {
             "notes_db"
         ).build()
 
+        googleDriveManager = GoogleDriveBackupManager().apply {
+            initializeGoogleSignIn(this@SecureNotesApp)
+        }
+
         val language = PreferenceHelper.getLanguage(this) ?: "default"
         LocaleHelper.setLocale(this, language)
 
-        val context: Context = SecureNotesApp.applicationContext()
+        //val context: Context = SecureNotesApp.applicationContext()
     }
 
 

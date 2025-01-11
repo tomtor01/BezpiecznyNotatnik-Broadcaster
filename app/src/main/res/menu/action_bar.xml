@@ -12,5 +12,4 @@
         android:icon="@drawable/ic_account"
         android:title="@string/account"
         app:showAsAction="ifRoom" />
-
 </menu>

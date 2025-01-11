@@ -27,6 +27,5 @@
         <activity android:name=".activities.AccessActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activities.PasswordSetupActivity" />
-        <activity android:name=".activities.AccountActivity"/>
     </application>
 </manifest>

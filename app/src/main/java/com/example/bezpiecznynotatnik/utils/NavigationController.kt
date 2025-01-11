@@ -2,6 +2,7 @@ package com.example.bezpiecznynotatnik.utils
 
 import com.example.bezpiecznynotatnik.activities.MainActivity
 import com.example.bezpiecznynotatnik.R
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 import android.content.Intent
@@ -9,12 +10,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import com.example.bezpiecznynotatnik.activities.AccountActivity
 
 abstract class NavigationController : AppCompatActivity() {
 
@@ -34,6 +33,7 @@ abstract class NavigationController : AppCompatActivity() {
         accountItem.icon?.setTintList(
             ContextCompat.getColorStateList(this, R.color.md_theme_primary)
         )
+
         return true
     }
 
@@ -52,16 +52,12 @@ abstract class NavigationController : AppCompatActivity() {
     }
 
     private fun handleLogout() {
-        Toast.makeText(this, getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
     private fun openAccountSettings() {
-        val intent = Intent(this, AccountActivity::class.java)
-        startActivity(intent)
-        finish()
+        showAccountFragment()
     }
 
     private fun setupNavigationBar() {
@@ -95,4 +91,5 @@ abstract class NavigationController : AppCompatActivity() {
             }
         }
     }
+    abstract fun showAccountFragment()
 }
