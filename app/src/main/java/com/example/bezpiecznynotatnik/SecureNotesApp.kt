@@ -39,10 +39,7 @@ class SecureNotesApp : Application() {
 
         val language = PreferenceHelper.getLanguage(this) ?: "default"
         LocaleHelper.setLocale(this, language)
-
-        //val context: Context = SecureNotesApp.applicationContext()
     }
-
 
     fun scheduleLogoutWork() {
         Log.d("SecureNotesApp", "Scheduling logout...")

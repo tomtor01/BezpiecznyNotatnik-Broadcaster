@@ -40,7 +40,7 @@ class GoogleDriveBackupManager {
     }
 
     fun isUserSignedIn(): Boolean {
-        val isUserSignedIn = AppState.isUserSignedIn
+        val isUserSignedIn = UserState.isUserSignedIn
         return isUserSignedIn
     }
 
@@ -84,6 +84,11 @@ class GoogleDriveBackupManager {
     fun getSignedInUserName(context: Context): String {
         val googleAccount = GoogleSignIn.getLastSignedInAccount(context)
         return googleAccount?.displayName ?: context.getString(R.string.user)
+    }
+
+    fun getProfilePictureUrl(context: Context): String? {
+        val googleAccount = GoogleSignIn.getLastSignedInAccount(context)
+        return googleAccount?.photoUrl?.toString() // Returns the URL of the profile picture
     }
 
     private fun initializeDriveService(context: Context, account: GoogleSignInAccount) {
@@ -229,18 +234,17 @@ class GoogleDriveBackupManager {
     }
 
     fun signOut(onResult: (Boolean) -> Unit) {
-        googleSignInClient?.signOut()?.addOnCompleteListener { task ->
+        googleSignInClient!!.signOut().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onResult(true)
+
             } else {
                 onResult(false)
             }
-        } ?: run {
-            onResult(false)
         }
     }
 }
 
-object AppState {
+object UserState {
     var isUserSignedIn: Boolean = false
 }

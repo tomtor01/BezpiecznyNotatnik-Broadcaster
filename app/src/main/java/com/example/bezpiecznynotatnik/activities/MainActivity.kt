@@ -6,7 +6,7 @@ import com.example.bezpiecznynotatnik.utils.*
 import com.example.bezpiecznynotatnik.utils.ByteArrayUtil.fromBase64
 import com.example.bezpiecznynotatnik.data.NoteDao
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
-import com.example.bezpiecznynotatnik.data.AppState
+import com.example.bezpiecznynotatnik.data.UserState
 
 import android.content.Context
 import android.content.Intent
@@ -127,13 +127,13 @@ class MainActivity : AppCompatActivity() {
             navigateToAccessActivity()
             googleDriveManager.silentSignIn(applicationContext,
                 onSuccess = {
-                    AppState.isUserSignedIn = true
+                    UserState.isUserSignedIn = true
                     val userName = googleDriveManager.getSignedInUserName(applicationContext)
                     Toast.makeText(this@MainActivity,
                         getString(R.string.welcome_user, userName), Toast.LENGTH_SHORT).show()
                 },
                 onFailure = { errorMessage ->
-                    AppState.isUserSignedIn = false
+                    UserState.isUserSignedIn = false
                     Log.w("MainActivity", "Silent sign-in failed: $errorMessage")
                 })
         } else {

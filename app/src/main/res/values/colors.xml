@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="ripple_color">#747B88</color>"
+    <color name="ripple_mask_color">#747B88</color>
     <color name="md_theme_primary">#005191</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#0076CF</color>
@@ -16,11 +18,11 @@
     <color name="md_theme_onError">#FFFFFF</color>
     <color name="md_theme_errorContainer">#9B1615</color>
     <color name="md_theme_onErrorContainer">#FFE8E5</color>
-    <color name="md_theme_background">#F8F9FF</color>
+    <color name="md_theme_background">#CBCBD3</color>
     <color name="md_theme_onBackground">#181C22</color>
-    <color name="md_theme_surface">#FCF8F8</color>
+    <color name="md_theme_surface">#CBCBD3</color>
     <color name="md_theme_onSurface">#1C1B1C</color>
-    <color name="md_theme_surfaceVariant">#E0E4ED</color>   <!-- Note background -->
+    <color name="md_theme_surfaceVariant">#52EDF3FA</color>   <!-- Note background -->
     <color name="md_theme_onSurfaceVariant">#404753</color>
     <color name="md_theme_outline">#707784</color>
     <color name="md_theme_outlineVariant">#C0C7D5</color>

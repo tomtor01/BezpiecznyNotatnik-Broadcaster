@@ -48,12 +48,14 @@
     <string name="authentication_error">Authentication error</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="account">Account</string>
-    <string name="sign_up_info">Tap here to sign in to your Google account in order to make backups of your notes in Google Drive.</string>
+    <string name="sign_up_info">Log in to your Google account</string>
     <string name="user">user</string>
     <string name="welcome_user">Welcome, %1$s</string>
     <string name="sign_out">Sign out</string>
     <string name="import_notes">Import</string>
     <string name="export_notes">Export</string>
+    <string name="profile_picture" translatable="false">profile_picture</string>
+    <string name="authentication_settings">Authentication settings</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

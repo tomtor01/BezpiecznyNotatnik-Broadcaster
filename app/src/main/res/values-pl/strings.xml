@@ -48,12 +48,13 @@
     <string name="authentication_error">Wystąpił błąd przy identyfikacji</string>
     <string name="forgot_password">Zapomniano hasła?</string>
     <string name="account">Konto</string>
-    <string name="sign_up_info">Tapnij tutaj, żeby zalogować się do swojego konta Google, aby móc wykonywać kopie zapasowe swoich notatek w Google Drive.</string>
+    <string name="sign_up_info">Zaloguj się na konto Google</string>
     <string name="user">użytkowniku</string>
     <string name="welcome_user">Witaj, %1$s</string>
     <string name="sign_out">Wyloguj się</string>
     <string name="import_notes">Importuj</string>
     <string name="export_notes">Eksportuj</string>
+    <string name="authentication_settings">Uwierzytelnianie</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

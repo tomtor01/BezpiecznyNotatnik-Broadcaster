@@ -1,4 +1,6 @@
 <resources>
+    <color name="ripple_color">#3A3B3E</color>"
+    <color name="ripple_mask_color">#3A3B3E</color>
     <color name="md_theme_primary">#A2C9FF</color>
     <color name="md_theme_onPrimary">#00315C</color>
     <color name="md_theme_primaryContainer">#0076CF</color>

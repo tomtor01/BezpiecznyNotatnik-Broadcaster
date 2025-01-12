@@ -19,8 +19,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.bezpiecznynotatnik.SecureNotesApp
-import com.example.bezpiecznynotatnik.data.AppState
+import com.example.bezpiecznynotatnik.data.UserState
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
 import com.example.bezpiecznynotatnik.databinding.FragmentSettingsBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -57,49 +58,57 @@ class SettingsFragment : Fragment() {
         changePasswordButton.setOnClickListener {
             showChangePasswordDialog()
         }
-
         applyLanguageButton.setOnClickListener {
             applySelectedLanguage()
         }
+    }
 
-        binding.accountLayout.setOnClickListener {
-            val navController = findNavController()
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.nav_settings, true) // Pop up to settings fragment, clearing the stack from settings onward
-                .build()
+    private fun updateAccountLayout() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.nav_settings, true) // Pop up to settings fragment, clearing the stack from settings onward
+            .build()
 
-            val isUserSignedIn = googleDriveManager.isUserSignedIn()
-            if (isUserSignedIn) {
-                navController.navigate(R.id.action_settings_to_account, null, navOptions)
-            } else {
+        val userState = googleDriveManager.isUserSignedIn()
+        if (userState) {
+            binding.loggedInLayout.visibility = View.VISIBLE
+            binding.loggedOutLayout.visibility = View.GONE
+            val userName = googleDriveManager.getSignedInUserName(requireActivity())
+            val profilePictureUrl = googleDriveManager.getProfilePictureUrl(requireActivity())
+            binding.accountStatusText.text = getString(R.string.welcome_user, userName)
+
+            Glide.with(this)
+                .load(profilePictureUrl)
+                .placeholder(R.drawable.ic_account) // Placeholder image while loading
+                .error(R.drawable.ic_account) // Fallback if the image fails to load
+                .circleCrop() // Crop the image into a circle
+                .into(binding.profilePicture)
+
+            binding.loggedInLayout.setOnClickListener {
+                findNavController().navigate(R.id.action_settings_to_account, null, navOptions)
+            }
+        } else {
+            binding.loggedInLayout.visibility = View.GONE
+            binding.loggedOutLayout.visibility = View.VISIBLE
+
+            binding.loggedOutLayout.setOnClickListener {
                 val signInIntent = googleDriveManager.getSignInIntent()
                 signInLauncher.launch(signInIntent)
             }
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun updateAccountLayout() {
-        val userState = googleDriveManager.isUserSignedIn()
-        if (userState) {
-            val userName = googleDriveManager.getSignedInUserName(requireActivity())
-            binding.accountStatusText.text = "Welcome, $userName"
-        } else {
-            binding.accountStatusText.text = getString(R.string.sign_up_info)
-        }
-    }
-
     private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result ->
             if (result.resultCode == RESULT_OK && result.data != null) {
-                googleDriveManager.handleSignInResult(requireContext(),
+                googleDriveManager.handleSignInResult(requireActivity(),
                     data = result.data,
                     onSuccess = {
-                        AppState.isUserSignedIn = true
+                        UserState.isUserSignedIn = true
+                        findNavController().navigate(R.id.nav_settings)
                         Toast.makeText(requireContext(), "Sign-In successful!", Toast.LENGTH_SHORT).show()
                     },
                     onFailure = { errorMessage ->
-                        AppState.isUserSignedIn = false
+                        UserState.isUserSignedIn = false
                         Toast.makeText(requireContext(), "Sign-In failed: $errorMessage", Toast.LENGTH_SHORT).show()
                     }
                 )

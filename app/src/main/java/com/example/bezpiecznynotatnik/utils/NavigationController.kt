@@ -68,9 +68,3 @@ abstract class NavigationController : AppCompatActivity() {
         }
     }
 }
-
-
-//        if (navigationBar == null) {
-//            Log.e("NavController", "BottomNavigationView not found in the layout!")
-//            return
-//        }

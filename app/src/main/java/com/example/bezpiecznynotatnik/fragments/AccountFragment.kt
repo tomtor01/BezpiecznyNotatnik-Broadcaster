@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
+import com.example.bezpiecznynotatnik.data.UserState
 import kotlinx.coroutines.launch
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
@@ -87,10 +88,12 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     private fun signOutUser() {
         googleDriveManager.signOut { success ->
             if (success) {
+                UserState.isUserSignedIn = false
                 Toast.makeText(requireContext(), "Signed out successfully!", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.nav_settings)
             } else {
                 Toast.makeText(requireContext(), "Failed to sign out.", Toast.LENGTH_SHORT).show()
+                UserState.isUserSignedIn = true
             }
         }
     }

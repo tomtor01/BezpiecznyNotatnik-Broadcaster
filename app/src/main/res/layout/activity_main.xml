@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/note_background"
+        android:background="@drawable/primary_layer"
         android:layout_marginBottom="16dp"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@id/guideline">
