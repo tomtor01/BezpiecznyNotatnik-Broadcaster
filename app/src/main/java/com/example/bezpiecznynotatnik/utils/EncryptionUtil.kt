@@ -15,7 +15,7 @@ import javax.crypto.spec.GCMParameterSpec
 object EncryptionUtil {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val KEY_SIZE = 256
-    private const val KEY_NAME = "APP_KEY2"
+    private const val KEY_NAME = "THE_PRIVATE_KEYv5"
     private const val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
     private const val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
     private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
@@ -27,7 +27,7 @@ object EncryptionUtil {
     }
 
     // Get or create a secret key in the Android Keystore
-    private fun getOrCreateSecretKey(): SecretKey {
+    fun getOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         keyStore.getKey(KEY_NAME, null)?.let { return it as SecretKey }
 
@@ -37,6 +37,7 @@ object EncryptionUtil {
             .setBlockModes(ENCRYPTION_BLOCK_MODE)
             .setEncryptionPaddings(ENCRYPTION_PADDING)
             .setKeySize(KEY_SIZE)
+            .setUserAuthenticationRequired(false)   // if true, authentication would be required even for encryption
             .setRandomizedEncryptionRequired(true)
             .setInvalidatedByBiometricEnrollment(true)
             .build()
@@ -75,18 +76,7 @@ object EncryptionUtil {
         val plaintext = cipher.doFinal(encryptedMessage)
         return String(plaintext, Charset.forName("UTF-8"))
     }
-
-    fun encryptHash(hash: ByteArray): Pair<ByteArray, ByteArray> {
-        val cipher = getInitializedCipherForEncryption()
-        return Pair(cipher.iv, cipher.doFinal(hash))
-    }
-
-    fun decryptHash(iv: ByteArray, encryptedHash: ByteArray): ByteArray {
-        val cipher = getInitializedCipherForDecryption(iv)
-        return cipher.doFinal(encryptedHash)
-    }
 }
-
 object ByteArrayUtil {
     fun toBase64(bytes: ByteArray): String = Base64.encodeToString(bytes, Base64.NO_WRAP)
     fun fromBase64(base64String: String): ByteArray = Base64.decode(base64String, Base64.NO_WRAP)

@@ -6,10 +6,4 @@
         android:icon="@drawable/ic_logout"
         android:title="@string/logout"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/accountButton"
-        android:icon="@drawable/ic_account"
-        android:title="@string/account"
-        app:showAsAction="ifRoom" />
 </menu>

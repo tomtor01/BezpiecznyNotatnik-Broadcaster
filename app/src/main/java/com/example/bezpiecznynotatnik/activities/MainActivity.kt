@@ -1,13 +1,18 @@
 package com.example.bezpiecznynotatnik.activities
 
+import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
+import com.example.bezpiecznynotatnik.utils.ByteArrayUtil.fromBase64
 import com.example.bezpiecznynotatnik.data.NoteDao
+import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
+import com.example.bezpiecznynotatnik.data.AppState
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.text.SpannableString
 import android.text.SpannedString
 import android.text.method.LinkMovementMethod
@@ -25,11 +30,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.bezpiecznynotatnik.SecureNotesApp
-import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 import java.util.Locale
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noteDao: NoteDao
     private lateinit var auth: FirebaseAuth
     private lateinit var googleDriveManager: GoogleDriveBackupManager
+    private var isAuthenticatedWithBiometric: Boolean = false
+    private var isAuthenticatedWithPassword: Boolean = false
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase == null) {
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         val spanString = SpannableString(getString(R.string.forgot_password))
         val forgotPasswordText = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                //showPasswordResetDialog()
+                //TODO("Not yet implemented")
             }
         }
         spanString.setSpan(forgotPasswordText, 0, spanString.length, SpannedString.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -78,11 +81,12 @@ class MainActivity : AppCompatActivity() {
         forgotPassword.movementMethod = LinkMovementMethod.getInstance()
 
         val saltBase64 = sharedPrefs.getString("password_salt", null)
-        val encryptedHashBase64 = sharedPrefs.getString("passwordHash", null)
-        val ivBase64 = sharedPrefs.getString("iv", null)
+        val passwordHashBase64 = sharedPrefs.getString("passwordHash", null)
 
-        if (saltBase64 == null || encryptedHashBase64 == null || ivBase64 == null) {
-            Toast.makeText(this, "Utwórz nowe hasło", Toast.LENGTH_SHORT).show()
+        if (saltBase64 == null || passwordHashBase64 == null) {
+            Toast.makeText(this, getString(R.string.set_password), Toast.LENGTH_SHORT).show()
+            resetPassword()
+            clearNotes()
             redirectToPasswordSetup()
             return
         }
@@ -90,7 +94,21 @@ class MainActivity : AppCompatActivity() {
         googleDriveManager.initializeGoogleSignIn(applicationContext)
 
         loginWithPasswordButton.setOnClickListener {
-            authenticateWithPassword()
+            authenticateWithPassword(object : PasswordAuthenticationListener {
+                override fun onPasswordAuthenticationSuccess() {
+                    isAuthenticatedWithPassword = true
+                    anonymousAuth()
+                }
+                override fun onPasswordAuthenticationFailure() {}
+                override fun onPasswordAuthenticationException() {
+                    Toast.makeText(this@MainActivity,
+                        getString(R.string.authentication_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    redirectToPasswordSetup()
+                    return
+                }
+            })
         }
         loginWithBiometricsButton.setOnClickListener {
             authenticateWithBiometrics()
@@ -98,6 +116,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun anonymousAuth() {
+        if (!(isAuthenticatedWithBiometric || isAuthenticatedWithPassword)) {
+            Toast.makeText(this, "Authentication required", Toast.LENGTH_SHORT).show()
+            return
+        }
         val currentUser = auth.currentUser
         if (currentUser != null && currentUser.isAnonymous) {
             // Reuse existing anonymous user
@@ -105,12 +127,15 @@ class MainActivity : AppCompatActivity() {
             navigateToAccessActivity()
             googleDriveManager.silentSignIn(applicationContext,
                 onSuccess = {
-                    Toast.makeText(this@MainActivity, "Automatically signed in to Google Drive!", Toast.LENGTH_SHORT).show()
+                    AppState.isUserSignedIn = true
+                    val userName = googleDriveManager.getSignedInUserName(applicationContext)
+                    Toast.makeText(this@MainActivity,
+                        getString(R.string.welcome_user, userName), Toast.LENGTH_SHORT).show()
                 },
                 onFailure = { errorMessage ->
-                    Log.w("AccountActivity", "Silent sign-in failed: $errorMessage")
-                }
-            )
+                    AppState.isUserSignedIn = false
+                    Log.w("MainActivity", "Silent sign-in failed: $errorMessage")
+                })
         } else {
             // Sign in anonymously
             auth.signInAnonymously()
@@ -121,74 +146,74 @@ class MainActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { exception ->
                     Log.e("MainActivity", "Anonymous authentication failed: ${exception.message}")
-                    Toast.makeText(this, "Authentication failed. Please try again.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.authentication_error), Toast.LENGTH_SHORT).show()
                 }
         }
     }
 
-    private fun redirectToPasswordSetup() {
-        val intent = Intent(this, PasswordSetupActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    private fun authenticateWithPassword() {
+    private fun authenticateWithPassword(listener: PasswordAuthenticationListener) {
         val enteredPassword = passwordInput.text.toString()
         if (enteredPassword.isEmpty()) {
             return
         }
         try {
             val attemptCounter = sharedPrefs.getInt("attemptCounter", 0)
-            if (attemptCounter >= 10) {
-                resetPassword()
-                return
-            }
             val saltBase64 = sharedPrefs.getString("password_salt", null)
-            val encryptedHashBase64 = sharedPrefs.getString("passwordHash", null)
-            val ivBase64 = sharedPrefs.getString("iv", null)
+            val passwordHashBase64 = sharedPrefs.getString("passwordHash", null)
 
-            val salt = ByteArrayUtil.fromBase64(saltBase64.toString())
+            val salt = fromBase64(saltBase64.toString())
             val hashedPassword = HashUtil.hashPassword(enteredPassword, salt)
+            val storedPasswordHash = fromBase64(passwordHashBase64.toString())
 
-            val storedEncryptedHash = ByteArrayUtil.fromBase64(encryptedHashBase64.toString())
-            val storedIv = ByteArrayUtil.fromBase64(ivBase64.toString())
-
-            val decryptedHash = EncryptionUtil.decryptHash(storedIv, storedEncryptedHash)
-            if (hashedPassword.contentEquals(decryptedHash)) {
-                anonymousAuth()
+            if (hashedPassword.contentEquals(storedPasswordHash)) {
+                listener.onPasswordAuthenticationSuccess()
+                Log.d("MainActivity", "Password matches stored hash.")
                 sharedPrefs.edit().putInt("attemptCounter", 0)
                     .apply() // Reset the counter on success
             } else {
+                listener.onPasswordAuthenticationFailure()
                 handleFailedAttempt(attemptCounter)
             }
         } catch (e: Exception) {
             Log.e("MainActivity", "Error authenticating with password: ${e.message}", e)
-            Toast.makeText(this, getString(R.string.authentication_error), Toast.LENGTH_SHORT).show()
+            listener.onPasswordAuthenticationException()
         }
     }
 
     private fun authenticateWithBiometrics() {
-        // sprawdzanie dostępności biometrii
         val biometricManager = BiometricManager.from(this)
         if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
             Toast.makeText(this, "Biometric authentication is not available", Toast.LENGTH_LONG).show()
+            return
         }
         val executor = ContextCompat.getMainExecutor(this)
+        val cipher = EncryptionUtil.getInitializedCipherForEncryption()
+        val cryptoObject = BiometricPrompt.CryptoObject(cipher)
 
         val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                Toast.makeText(this@MainActivity, getString(R.string.logged_in), Toast.LENGTH_SHORT).show()
-                anonymousAuth()
+                try {
+                    val biometricCipher = result.cryptoObject?.cipher
+                    if (biometricCipher == null) {
+                        Log.e("MainActivity", "Cipher is null.")
+                        return
+                    }
+                    Log.d("MainActivity", "Biometric authentication succeeded!")
+                    isAuthenticatedWithBiometric = true
+                    anonymousAuth()
+                } catch (e: Exception) {
+                    if (e is KeyPermanentlyInvalidatedException) {
+                        Log.e("MainActivity", "Biometric enrollment changed. Prompting for password.")
+                        promptPasswordAuthenticationToRegenerateKey()
+                    } else {
+                        Log.e("MainActivity", "Authentication error: ${e.message}")
+                    }
+                }
             }
-
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(this@MainActivity,
-                    getString(R.string.error, errString), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "$errString", Toast.LENGTH_SHORT).show()
             }
-
             override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
                 Toast.makeText(this@MainActivity, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
             }
         })
@@ -199,18 +224,34 @@ class MainActivity : AppCompatActivity() {
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
-        val cipher = EncryptionUtil.getInitializedCipherForEncryption()
-        val cryptoObject = BiometricPrompt.CryptoObject(cipher)
         biometricPrompt.authenticate(promptInfo, cryptoObject)
     }
 
-    fun performLogout(context: Context) {
-        Firebase.auth.signOut()
+    private fun promptPasswordAuthenticationToRegenerateKey() {
+        authenticateWithPassword(object : PasswordAuthenticationListener {
+            override fun onPasswordAuthenticationSuccess() {
+                Log.d("MainActivity", "Password authentication succeeded. Regenerating key.")
+                EncryptionUtil.getOrCreateSecretKey()
+                Toast.makeText(this@MainActivity, "Key regenerated. Biometric authentication restored.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onPasswordAuthenticationFailure() {
+                Log.d("MainActivity", "Password authentication failed.")
+            }
+
+            override fun onPasswordAuthenticationException() {
+                Log.d("MainActivity", "An error occurred during password authentication.")
+            }
+        })
     }
 
     private fun navigateToAccessActivity() {
-        val intent = Intent(this, AccessActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, AccessActivity::class.java))
+        finish()
+    }
+
+    private fun redirectToPasswordSetup() {
+        startActivity(Intent(this, PasswordSetupActivity::class.java))
         finish()
     }
 
@@ -219,7 +260,8 @@ class MainActivity : AppCompatActivity() {
         sharedPrefs.edit().putInt("attemptCounter", newAttemptCount).apply()
         val attempt = 10 - newAttemptCount
         if (newAttemptCount >= 10) {
-            resetPassword()
+            showResetPasswordDialog()
+            return
         } else {
             Toast.makeText(
                 this,
@@ -229,31 +271,43 @@ class MainActivity : AppCompatActivity() {
             passwordInput.text.clear()
         }
     }
-
-    private fun resetPassword() {
-        sharedPrefs.edit()
-            .remove("passwordHash")
-            .remove("iv")
-            .remove("password_salt")
-            .putInt("attemptCounter", 0)
-            .apply()
+    private fun clearNotes() {
         lifecycleScope.launch {
             try {
                 noteDao = (application as SecureNotesApp).noteDatabase.noteDao()
                 noteDao.deleteAllNotes()
             } catch (e: Exception) {
-                Log.e("MainActivity", "Error resetting password: ${e.message}")
+                Log.e("MainActivity", "Error resetting notes: ${e.message}")
             }
         }
+    }
+
+    private fun resetPassword() {
+        sharedPrefs.edit()
+            .remove("passwordHash")
+            .remove("fingerprint_hash")
+            .remove("password_salt")
+            .putInt("attemptCounter", 0)
+            .apply()
+        clearNotes()
+    }
+
+    private fun showResetPasswordDialog() {
+        resetPassword()
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.reset_dialog_tittle))
             .setMessage(getString(R.string.reset_dialog_text))
             .setPositiveButton("OK") { _, _ ->
-                val intent = Intent(this, PasswordSetupActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, PasswordSetupActivity::class.java))
                 finish()
             }
             .setCancelable(false)
             .show()
+    }
+
+    interface PasswordAuthenticationListener {
+        fun onPasswordAuthenticationSuccess()
+        fun onPasswordAuthenticationFailure()
+        fun onPasswordAuthenticationException()
     }
 }

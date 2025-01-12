@@ -1,4 +1,5 @@
 <resources>
+    <string name="web_client_id" translatable="false">368501999338-d7to8bnbha5v4iordgk1jkokfui23ftm.apps.googleusercontent.com</string>
     <string name="app_name">NoteLocker</string>
     <string name="enter_password">Enter password</string>
     <string name="enter_new_password">Enter new password</string>
@@ -37,7 +38,7 @@
     <string name="try_again">Try again!</string>
     <string name="logged_in">Logged in!</string>
     <string name="biometric_prompt">To log in, tap the fingerprint sensor</string>
-    <string name="error">Error: %1$s</string>
+    <string name="error">Error</string>
     <string name="logged_out">Logged out!</string>
     <string name="language_changed">Zmieniono język na %1$s</string>
     <string name="not_equal_passwords">Passwords do not match!</string>
@@ -46,10 +47,13 @@
     <string name="password_changed">New password is set</string>
     <string name="authentication_error">Authentication error</string>
     <string name="forgot_password">Forgot password?</string>
-    <string name="link_account">Powiąż z zewnętrznym kontem</string>
-    <string name="link_email">Powiąż email</string>
     <string name="account">Account</string>
-    <string name="web_client_id">368501999338-d7to8bnbha5v4iordgk1jkokfui23ftm.apps.googleusercontent.com</string>
+    <string name="sign_up_info">Tap here to sign in to your Google account in order to make backups of your notes in Google Drive.</string>
+    <string name="user">user</string>
+    <string name="welcome_user">Welcome, %1$s</string>
+    <string name="sign_out">Sign out</string>
+    <string name="import_notes">Import</string>
+    <string name="export_notes">Export</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

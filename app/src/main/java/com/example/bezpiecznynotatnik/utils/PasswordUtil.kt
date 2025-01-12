@@ -30,24 +30,18 @@ object HashUtil {
 fun changePassword(context: Context, newPassword: String) {
     sharedPrefs = context.getSharedPreferences("SecureNotesPrefs", MODE_PRIVATE)
     try {
-
         val salt = SaltUtil.generateSalt()
         val passwordHash = HashUtil.hashPassword(newPassword, salt)
-        val (iv, encryptedHash) = EncryptionUtil.encryptHash(passwordHash)
 
-        // Save the hashed password, IV, and salt in SharedPreferences
         sharedPrefs.edit()
-            .putString("passwordHash", ByteArrayUtil.toBase64(encryptedHash))
-            .putString("iv", ByteArrayUtil.toBase64(iv))
+            .putString("passwordHash", ByteArrayUtil.toBase64(passwordHash))
             .putString("password_salt", ByteArrayUtil.toBase64(salt))
             .apply()
 
         Toast.makeText(context, getString(context, R.string.password_changed), Toast.LENGTH_SHORT)
             .show()
     } catch (e: Exception) {
-        Toast.makeText(
-            context,
-            getString(context, R.string.set_password_failure),
+        Toast.makeText(context, getString(context, R.string.set_password_failure),
             Toast.LENGTH_SHORT
         ).show()
         e.printStackTrace()

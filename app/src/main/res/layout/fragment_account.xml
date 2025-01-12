@@ -13,7 +13,7 @@
         android:layout_marginStart="-6dp"
         android:layout_marginTop="65dp"
         android:layout_marginBottom="20dp"
-        android:text="Export"
+        android:text="@string/export_notes"
         android:textSize="20sp" />
 
     <Button
@@ -22,16 +22,16 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/btnExport"
         android:layout_centerInParent="true"
-        android:text="Import"
+        android:text="@string/import_notes"
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/signUpButton"
+        android:id="@+id/btnSignOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/btnExport"
         android:layout_centerInParent="true"
-        android:text="Sign Up"
+        android:text="@string/sign_out"
         android:textSize="20sp" />
 
 </RelativeLayout>

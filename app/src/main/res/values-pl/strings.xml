@@ -38,7 +38,7 @@
     <string name="try_again">Spróbuj ponownie</string>
     <string name="logged_in">Zalogowano!</string>
     <string name="biometric_prompt">Aby się zalogować, zidentyfikuj się odciskiem palca</string>
-    <string name="error">Błąd: %1$s</string>
+    <string name="error">Błąd</string>
     <string name="logged_out">Wylogowano</string>
     <string name="language_changed">Language changed to %1$s</string>
     <string name="not_equal_passwords">Wpisz dwa razy to samo hasło!</string>
@@ -47,9 +47,13 @@
     <string name="password_changed">Hasło zostało zmienione</string>
     <string name="authentication_error">Wystąpił błąd przy identyfikacji</string>
     <string name="forgot_password">Zapomniano hasła?</string>
-    <string name="link_account">Powiąż z zewnętrznym kontem</string>
-    <string name="link_email">Powiąż email</string>
     <string name="account">Konto</string>
+    <string name="sign_up_info">Tapnij tutaj, żeby zalogować się do swojego konta Google, aby móc wykonywać kopie zapasowe swoich notatek w Google Drive.</string>
+    <string name="user">użytkowniku</string>
+    <string name="welcome_user">Witaj, %1$s</string>
+    <string name="sign_out">Wyloguj się</string>
+    <string name="import_notes">Importuj</string>
+    <string name="export_notes">Eksportuj</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

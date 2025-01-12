@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik.activities
 
-import android.app.Activity
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 

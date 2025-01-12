@@ -1,15 +1,15 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import android.app.Activity.RESULT_OK
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
 
-    private lateinit var btnSignIn: Button
+    private lateinit var btnSignOut: Button
     private lateinit var btnExport: Button
     private lateinit var btnImport: Button
     private lateinit var googleDriveManager: GoogleDriveBackupManager
@@ -25,28 +25,31 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        googleDriveManager = (requireActivity().applicationContext as SecureNotesApp).googleDriveManager
+        googleDriveManager.initializeGoogleSignIn(requireActivity())
         return inflater.inflate(R.layout.fragment_account, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        btnSignIn = view.findViewById(R.id.signUpButton)
+        btnSignOut = view.findViewById(R.id.btnSignOut)
         btnExport = view.findViewById(R.id.btnExport)
         btnImport = view.findViewById(R.id.btnImport)
 
-        googleDriveManager = (requireActivity().applicationContext as SecureNotesApp).googleDriveManager
-        googleDriveManager.initializeGoogleSignIn(requireActivity())
         setupUI()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.nav_settings) }
+            })
     }
 
     private fun setupUI() {
         // Set up Sign-In button
-        btnSignIn.setOnClickListener {
-            val signInIntent = googleDriveManager.getSignInIntent()
-            signInLauncher.launch(signInIntent)
+        btnSignOut.setOnClickListener {
+            signOutUser()
         }
 
         // Set up Export button
@@ -81,22 +84,14 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             }
         }
     }
-
-    // Handle sign-in result
-    private val signInLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK && result.data != null) {
-                googleDriveManager.handleSignInResult(requireContext(),
-                    data = result.data,
-                    onSuccess = {
-                        Toast.makeText(requireContext(), "Sign-In successful!", Toast.LENGTH_SHORT).show()
-                    },
-                    onFailure = { errorMessage ->
-                        Toast.makeText(requireContext(), "Sign-In failed: $errorMessage", Toast.LENGTH_SHORT).show()
-                    }
-                )
+    private fun signOutUser() {
+        googleDriveManager.signOut { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "Signed out successfully!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.nav_settings)
             } else {
-                Toast.makeText(requireContext(), "Sign-In canceled or failed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to sign out.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 }

@@ -1,11 +1,12 @@
 package com.example.bezpiecznynotatnik.data
 
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.SecureNotesApp
+
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.room.Room
-import com.example.bezpiecznynotatnik.R
-import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -38,6 +39,11 @@ class GoogleDriveBackupManager {
         googleSignInClient = GoogleSignIn.getClient(context, gso)
     }
 
+    fun isUserSignedIn(): Boolean {
+        val isUserSignedIn = AppState.isUserSignedIn
+        return isUserSignedIn
+    }
+
     fun getSignInIntent(): Intent {
         return googleSignInClient?.signInIntent
             ?: throw IllegalStateException("Google Sign-In client is not initialized.")
@@ -67,8 +73,6 @@ class GoogleDriveBackupManager {
             val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
             if (account != null) {
                 initializeDriveService(context, account)
-//                val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-//                prefs.edit().putBoolean("is_signed_in", true).apply()
                 onSuccess()
             } else {
                 onFailure("Failed to retrieve Google account.")
@@ -76,6 +80,10 @@ class GoogleDriveBackupManager {
         } catch (e: ApiException) {
             onFailure("Google Sign-In failed: ${e.message}")
         }
+    }
+    fun getSignedInUserName(context: Context): String {
+        val googleAccount = GoogleSignIn.getLastSignedInAccount(context)
+        return googleAccount?.displayName ?: context.getString(R.string.user)
     }
 
     private fun initializeDriveService(context: Context, account: GoogleSignInAccount) {
@@ -119,16 +127,15 @@ class GoogleDriveBackupManager {
         if (driveService == null) throw IllegalStateException("Drive service is not initialized.")
         try {
             closeDatabase(context)
+
             val dbPath = context.getDatabasePath("notes_db")
             val shmPath = context.getDatabasePath("notes_db-shm")
             val walPath = context.getDatabasePath("notes_db-wal")
 
-            // Download the main database file
             downloadFileFromDrive("notes_db")?.copyTo(dbPath, overwrite = true)
-
-            // Download auxiliary files
             downloadFileFromDrive("notes_db-shm")?.copyTo(shmPath, overwrite = true)
             downloadFileFromDrive("notes_db-wal")?.copyTo(walPath, overwrite = true)
+
             reloadDatabase(context)
             Log.d("GoogleDriveManager", "Database restored successfully!")
         } catch (e: Exception) {
@@ -177,19 +184,19 @@ class GoogleDriveBackupManager {
     private suspend fun downloadFileFromDrive(fileName: String): File? {
         return try {
             val result = withContext(Dispatchers.IO) {
-                driveService?.files()?.list()
-                    ?.setQ("name='$fileName' and trashed=false")
-                    ?.setSpaces("drive")
-                    ?.execute()
+                driveService!!.files().list()
+                    .setQ("name='$fileName' and trashed=false")
+                    .setSpaces("drive")
+                    .execute()
             }
 
-            val fileId = result?.files?.firstOrNull()?.id
+            val fileId = result.files.firstOrNull()?.id
             if (fileId != null) {
                 val tempFile = withContext(Dispatchers.IO) {
                     File.createTempFile(fileName, null)
                 }
                 withContext(Dispatchers.IO) {
-                    driveService?.files()?.get(fileId)?.executeMediaAndDownloadTo(tempFile.outputStream())
+                    driveService!!.files().get(fileId).executeMediaAndDownloadTo(tempFile.outputStream())
                 }
                 tempFile
             } else {
@@ -220,4 +227,20 @@ class GoogleDriveBackupManager {
             "notes_db"
         ).build()
     }
+
+    fun signOut(onResult: (Boolean) -> Unit) {
+        googleSignInClient?.signOut()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onResult(true)
+            } else {
+                onResult(false)
+            }
+        } ?: run {
+            onResult(false)
+        }
+    }
+}
+
+object AppState {
+    var isUserSignedIn: Boolean = false
 }

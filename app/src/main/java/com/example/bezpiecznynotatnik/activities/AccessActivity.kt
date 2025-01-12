@@ -10,12 +10,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 import android.content.Context
 import android.os.Bundle
-import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.bezpiecznynotatnik.fragments.AccountFragment
 
 import java.util.Locale
 
@@ -35,6 +32,7 @@ class AccessActivity : NavigationController() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_access)
+        setupNavigationView()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -43,39 +41,6 @@ class AccessActivity : NavigationController() {
 
         // Link BottomNavigationView with NavController
         bottomNavigationView.setupWithNavController(navController)
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val accountFragmentContainer = findViewById<View>(R.id.account_fragment_container)
-                val bottomNavView = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-
-                if (supportFragmentManager.backStackEntryCount > 0) {
-                    // Handle fragment back navigation
-                    supportFragmentManager.popBackStack()
-                    bottomNavView.visibility = View.VISIBLE // Restore BottomNavigationView
-                    findViewById<View>(R.id.nav_host_fragment).visibility = View.VISIBLE // Restore nav_host_fragment
-                    accountFragmentContainer.visibility = View.GONE // Hide account_fragment_container
-                } else {
-                    // Default behavior
-                    finish()
-                }
-            }
-        })
-    }
-
-    override fun showAccountFragment() {
-        // Hide BottomNavigationView
-        findViewById<BottomNavigationView>(R.id.bottomNavigation).visibility = View.GONE
-        findViewById<View>(R.id.nav_host_fragment).visibility = View.GONE
-
-        // Show AccountFragment
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.account_fragment_container, AccountFragment())
-        transaction.addToBackStack(null) // Add to backstack to enable proper back navigation
-        transaction.commit()
-
-        // Make the container visible
-        findViewById<View>(R.id.account_fragment_container).visibility = View.VISIBLE
     }
 
     override fun onStop() {

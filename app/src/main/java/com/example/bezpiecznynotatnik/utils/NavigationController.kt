@@ -4,10 +4,7 @@ import com.example.bezpiecznynotatnik.activities.MainActivity
 import com.example.bezpiecznynotatnik.R
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 import android.content.Intent
-import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -17,23 +14,14 @@ import androidx.navigation.findNavController
 
 abstract class NavigationController : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupNavigationBar()
-    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_bar, menu)
 
         val logoutItem = menu.findItem(R.id.logoutButton)
-        val accountItem = menu.findItem(R.id.accountButton)
 
         logoutItem.icon?.setTintList(
             ContextCompat.getColorStateList(this, R.color.md_theme_primary)
         )
-        accountItem.icon?.setTintList(
-            ContextCompat.getColorStateList(this, R.color.md_theme_primary)
-        )
-
         return true
     }
 
@@ -41,10 +29,6 @@ abstract class NavigationController : AppCompatActivity() {
         return when (item.itemId) {
             R.id.logoutButton -> {
                 handleLogout()
-                true
-            }
-            R.id.accountButton -> {
-                openAccountSettings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -56,18 +40,10 @@ abstract class NavigationController : AppCompatActivity() {
         finish()
     }
 
-    private fun openAccountSettings() {
-        showAccountFragment()
-    }
+    fun setupNavigationView() {
+        val navigationView = findViewById<BottomNavigationView>(R.id.bottomNavigation)
 
-    private fun setupNavigationBar() {
-        val navigationBar = findViewById<BottomNavigationView>(R.id.bottomNavigation)
-        if (navigationBar == null) {
-            Log.e("NavController", "BottomNavigationView not found in the layout!")
-            return
-        }
-
-        navigationBar.setOnItemSelectedListener { menuItem ->
+        navigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_notesView -> {
                     findNavController(R.id.nav_host_fragment).navigate(
@@ -91,5 +67,10 @@ abstract class NavigationController : AppCompatActivity() {
             }
         }
     }
-    abstract fun showAccountFragment()
 }
+
+
+//        if (navigationBar == null) {
+//            Log.e("NavController", "BottomNavigationView not found in the layout!")
+//            return
+//        }
