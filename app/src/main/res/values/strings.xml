@@ -56,6 +56,7 @@
     <string name="export_notes">Export</string>
     <string name="profile_picture" translatable="false">profile_picture</string>
     <string name="authentication_settings">Authentication settings</string>
+    <string name="error_decrypting_note">Cannot decrypt the note!</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

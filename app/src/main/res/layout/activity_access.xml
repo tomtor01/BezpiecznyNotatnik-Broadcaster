@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         app:menu="@menu/navigation_bar"
         app:labelVisibilityMode="labeled"
-        android:background="@color/md_theme_background"
+        android:background="@color/fui_transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"

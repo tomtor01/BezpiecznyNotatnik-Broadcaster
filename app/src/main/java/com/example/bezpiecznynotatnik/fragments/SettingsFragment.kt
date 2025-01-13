@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*

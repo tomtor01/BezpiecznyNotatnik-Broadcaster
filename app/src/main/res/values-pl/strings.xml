@@ -45,7 +45,7 @@
     <string name="password_set">Ustawiono hasło!</string>
     <string name="set_password_failure">Wystąpił błąd przy ustawianiu hasła</string>
     <string name="password_changed">Hasło zostało zmienione</string>
-    <string name="authentication_error">Wystąpił błąd przy identyfikacji</string>
+    <string name="authentication_error">Wystąpił błąd podczas uwierzytelniania</string>
     <string name="forgot_password">Zapomniano hasła?</string>
     <string name="account">Konto</string>
     <string name="sign_up_info">Zaloguj się na konto Google</string>
@@ -55,6 +55,7 @@
     <string name="import_notes">Importuj</string>
     <string name="export_notes">Eksportuj</string>
     <string name="authentication_settings">Uwierzytelnianie</string>
+    <string name="error_decrypting_note">Nie można odszyfrować notatki!</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

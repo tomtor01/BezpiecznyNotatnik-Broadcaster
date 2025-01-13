@@ -43,7 +43,6 @@ class NotesFragment : Fragment() {
 
     }
 
-
     private fun loadNotes() {
         lifecycleScope.launch {
             val notes = noteDao.getAllNotes()
@@ -55,7 +54,7 @@ class NotesFragment : Fragment() {
                         ByteArrayUtil.fromBase64(note.iv)
                     )
                 } catch (e: Exception) {
-                    "Error decrypting note"
+                    getString(R.string.error_decrypting_note)
                 }
             }
 
