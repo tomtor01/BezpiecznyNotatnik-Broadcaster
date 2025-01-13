@@ -1,4 +1,4 @@
-package com.example.bezpiecznynotatnik.utils
+package com.example.bezpiecznynotatnik.adapters
 
 import com.example.bezpiecznynotatnik.data.Note
 import com.example.bezpiecznynotatnik.R

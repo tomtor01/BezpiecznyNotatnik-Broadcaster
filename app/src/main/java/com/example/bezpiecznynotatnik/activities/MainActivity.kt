@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var passwordInput: EditText
     private lateinit var loginWithPasswordButton: Button
-    private lateinit var loginWithBiometricsButton: Button
+    private lateinit var loginWithBiometricsButton: ImageButton
     private lateinit var forgotPassword: TextView
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var noteDao: NoteDao

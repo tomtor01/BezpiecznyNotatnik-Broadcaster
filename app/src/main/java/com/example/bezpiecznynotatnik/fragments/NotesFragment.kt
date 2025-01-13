@@ -5,7 +5,7 @@ import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.utils.ByteArrayUtil
 import com.example.bezpiecznynotatnik.utils.EncryptionUtil
-import com.example.bezpiecznynotatnik.utils.NotesAdapter
+import com.example.bezpiecznynotatnik.adapters.NotesAdapter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -40,7 +40,6 @@ class NotesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
     }
 
     private fun loadNotes() {
