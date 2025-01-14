@@ -56,3 +56,8 @@ class SecureNotesApp : Application() {
         WorkManager.getInstance(this).cancelAllWorkByTag("logout_work")
     }
 }
+
+object UserState {
+    var isUserSignedIn: Boolean = false
+    var isBiometricAuthenticationEnabled: Boolean = false
+}

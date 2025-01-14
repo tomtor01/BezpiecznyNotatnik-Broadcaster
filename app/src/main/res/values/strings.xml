@@ -59,6 +59,7 @@
     <string name="error_decrypting_note">Cannot decrypt the note!</string>
     <string name="language_already_set">The selected language is already in use.</string>
     <string name="enable_biometric_authentication">Enable fingerprint authentication</string>
+    <string name="key_invalidated">Biometric key has been invalidated. Enter your password to regenerate it.</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

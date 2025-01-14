@@ -1,6 +1,10 @@
 package com.example.bezpiecznynotatnik.adapters
 
+import com.example.bezpiecznynotatnik.UserState
+import com.example.bezpiecznynotatnik.R
+
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +17,6 @@ import android.widget.ArrayAdapter
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.bezpiecznynotatnik.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsAdapter(
@@ -23,7 +26,8 @@ class SettingsAdapter(
     private val onChangePasswordClick: () -> Unit,
     private val onLanguageSelected: (Int) -> Unit,
     private val onApplyLanguageClick: (Int) -> Unit,
-    private val onBiometricSwitchToggled: (Boolean) -> Unit
+    private val onBiometricSwitchToggled: (Boolean) -> Unit,
+    private val sharedPreferences: SharedPreferences
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
@@ -111,11 +115,12 @@ class SettingsAdapter(
             changePasswordButton.setOnClickListener {
                 onChangePasswordClick()
             }
-
-            biometricSwitch.isChecked = settingItem.isBiometricEnabled ?: false
+            val isBiometricEnabled = sharedPreferences.getBoolean("biometric_enabled", false)
+            biometricSwitch.isChecked = isBiometricEnabled
 
             biometricSwitch.setOnCheckedChangeListener { _, isChecked ->
                 onBiometricSwitchToggled(isChecked)
+                sharedPreferences.edit().putBoolean("biometric_enabled", isChecked).apply()
             }
         }
     }
@@ -138,9 +143,6 @@ class SettingsAdapter(
             languageSpinner.adapter = adapter
 
             // Preselect the current language
-//            settingItem.languageOptions?.indexOf(settingItem.selectedLanguage)?.let {
-//                if (it >= 0) languageSpinner.setSelection(it)
-//            }
             val selectedIndex = context.resources.getStringArray(R.array.language_codes)
                 .indexOf(settingItem.selectedLanguage)
                 .takeIf { it >= 0 } ?: 0

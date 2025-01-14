@@ -6,7 +6,7 @@ import com.example.bezpiecznynotatnik.SecureNotesApp
 import com.example.bezpiecznynotatnik.adapters.SettingItem
 import com.example.bezpiecznynotatnik.adapters.SettingType
 import com.example.bezpiecznynotatnik.adapters.SettingsAdapter
-import com.example.bezpiecznynotatnik.data.UserState
+import com.example.bezpiecznynotatnik.UserState
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
 import com.example.bezpiecznynotatnik.databinding.FragmentSettingsBinding
 
@@ -16,7 +16,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import android.content.SharedPreferences
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -49,6 +51,8 @@ class SettingsFragment : Fragment() {
             .setPopUpTo(R.id.nav_settings, true) // Pop up to settings fragment, clearing the stack from settings onward
             .build()
 
+        val sharedPrefs = requireContext().getSharedPreferences("SecureNotesPrefs", Context.MODE_PRIVATE)
+
         val settingsList = listOf(
             SettingItem(
                 type = SettingType.ACCOUNT,
@@ -75,7 +79,8 @@ class SettingsFragment : Fragment() {
             onChangePasswordClick = { showChangePasswordDialog() },
             onLanguageSelected = { index -> selectedLanguageIndex = index },
             onApplyLanguageClick = { index -> applySelectedLanguage(index) },
-            onBiometricSwitchToggled = { isEnabled -> toggleBiometricAuthentication(isEnabled) }
+            onBiometricSwitchToggled = { isEnabled -> toggleBiometricAuthentication(isEnabled) },
+            sharedPreferences = sharedPrefs
         )
 
         val recyclerView: RecyclerView = view.findViewById(R.id.settingsRecyclerView)

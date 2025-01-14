@@ -58,6 +58,7 @@
     <string name="error_decrypting_note">Nie można odszyfrować notatki!</string>
     <string name="language_already_set">Ten język jest już ustawiony.</string>
     <string name="enable_biometric_authentication">Enable fingerprint authentication</string>
+    <string name="key_invalidated">Klucz biometryczny unieważniony. Wpisz hasło aby wygenerować nowy klucz.</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

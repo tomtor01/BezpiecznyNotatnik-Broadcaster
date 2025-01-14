@@ -1,5 +1,10 @@
 package com.example.bezpiecznynotatnik.fragments
 
+import com.example.bezpiecznynotatnik.R
+import com.example.bezpiecznynotatnik.SecureNotesApp
+import com.example.bezpiecznynotatnik.UserState
+import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +15,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.bezpiecznynotatnik.R
-import com.example.bezpiecznynotatnik.SecureNotesApp
-import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
-import com.example.bezpiecznynotatnik.data.UserState
 import kotlinx.coroutines.launch
 
 class AccountFragment : Fragment(R.layout.fragment_account) {

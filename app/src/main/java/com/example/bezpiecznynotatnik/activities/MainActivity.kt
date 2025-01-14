@@ -1,12 +1,12 @@
 package com.example.bezpiecznynotatnik.activities
 
 import com.example.bezpiecznynotatnik.SecureNotesApp
+import com.example.bezpiecznynotatnik.UserState
 import com.example.bezpiecznynotatnik.R
 import com.example.bezpiecznynotatnik.utils.*
 import com.example.bezpiecznynotatnik.utils.ByteArrayUtil.fromBase64
 import com.example.bezpiecznynotatnik.data.NoteDao
 import com.example.bezpiecznynotatnik.data.GoogleDriveBackupManager
-import com.example.bezpiecznynotatnik.data.UserState
 
 import android.content.Context
 import android.content.Intent
@@ -111,8 +111,26 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-        loginWithBiometricsButton.setOnClickListener {
-            authenticateWithBiometrics()
+        updateBiometricButtonState()
+
+        // Listen for changes in SharedPreferences
+        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key == "biometric_enabled") {
+                updateBiometricButtonState()
+            }
+        }
+    }
+
+    private fun updateBiometricButtonState() {
+        val isBiometricEnabled = sharedPrefs.getBoolean("biometric_enabled", false)
+        loginWithBiometricsButton.isEnabled = isBiometricEnabled
+
+        if (isBiometricEnabled) {
+            loginWithBiometricsButton.setOnClickListener {
+                authenticateWithBiometrics()
+            }
+        } else {
+            loginWithBiometricsButton.setOnClickListener(null) // Clear the listener
         }
     }
 
@@ -204,6 +222,8 @@ class MainActivity : AppCompatActivity() {
                     anonymousAuth()
                 } catch (e: Exception) {
                     if (e is KeyPermanentlyInvalidatedException) {
+                        Toast.makeText(this@MainActivity,
+                            getString(R.string.key_invalidated), Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Biometric enrollment changed. Prompting for password.")
                         promptPasswordAuthenticationToRegenerateKey()
                     } else {
@@ -304,6 +324,10 @@ class MainActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        sharedPrefs.unregisterOnSharedPreferenceChangeListener { _, _ -> }
     }
 
     interface PasswordAuthenticationListener {
