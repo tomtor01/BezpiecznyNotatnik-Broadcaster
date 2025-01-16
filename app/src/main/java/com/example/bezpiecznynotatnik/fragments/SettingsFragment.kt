@@ -16,7 +16,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import android.content.SharedPreferences
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +25,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 import java.util.Locale
 
 class SettingsFragment : Fragment() {
@@ -147,8 +147,6 @@ class SettingsFragment : Fragment() {
     }
 
     private fun toggleBiometricAuthentication(isEnabled: Boolean) {
-        val isBiometricEnabled = isEnabled
-
         if (isEnabled) {
             // Enable biometric authentication logic
             Toast.makeText(requireContext(), "Biometric authentication enabled", Toast.LENGTH_SHORT).show()

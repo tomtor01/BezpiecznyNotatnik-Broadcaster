@@ -4,6 +4,7 @@ import com.example.bezpiecznynotatnik.activities.MainActivity
 import com.example.bezpiecznynotatnik.R
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
 import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem

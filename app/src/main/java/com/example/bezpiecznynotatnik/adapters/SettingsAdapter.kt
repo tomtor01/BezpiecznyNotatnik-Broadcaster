@@ -1,6 +1,5 @@
 package com.example.bezpiecznynotatnik.adapters
 
-import com.example.bezpiecznynotatnik.UserState
 import com.example.bezpiecznynotatnik.R
 
 import android.annotation.SuppressLint
@@ -17,6 +16,7 @@ import android.widget.ArrayAdapter
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsAdapter(
@@ -103,7 +103,7 @@ class SettingsAdapter(
     inner class AuthViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val passwordTextView: TextView = itemView.findViewById(R.id.password_text_view)
         private val changePasswordButton: Button = itemView.findViewById(R.id.changePasswordButton)
-        private val biometricSwitch: SwitchMaterial = itemView.findViewById(R.id.biometric_switch)
+        private val biometricSwitch: MaterialSwitch = itemView.findViewById(R.id.biometric_switch)
 
         fun bind(settingItem: SettingItem,
                  onChangePasswordClick: () -> Unit,
@@ -138,8 +138,8 @@ class SettingsAdapter(
             val languageNames = context.resources.getStringArray(R.array.language_names)
 
             // Set up the spinner adapter
-            val adapter = ArrayAdapter(context, R.layout.custom_spinner_item, languageNames)
-            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
+            val adapter = ArrayAdapter(context, R.layout.spinner_custom_items, languageNames)
+            adapter.setDropDownViewResource(R.layout.spinner_custom_dropdown)
             languageSpinner.adapter = adapter
 
             // Preselect the current language

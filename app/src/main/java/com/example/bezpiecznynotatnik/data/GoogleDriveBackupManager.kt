@@ -129,27 +129,6 @@ class GoogleDriveBackupManager {
         }
     }
 
-    suspend fun downloadDatabase(context: Context) {
-        if (driveService == null) throw IllegalStateException("Drive service is not initialized.")
-        try {
-            closeDatabase(context)
-
-            val dbPath = context.getDatabasePath("notes_db")
-            val shmPath = context.getDatabasePath("notes_db-shm")
-            val walPath = context.getDatabasePath("notes_db-wal")
-
-            downloadFileFromDrive("notes_db")?.copyTo(dbPath, overwrite = true)
-            downloadFileFromDrive("notes_db-shm")?.copyTo(shmPath, overwrite = true)
-            downloadFileFromDrive("notes_db-wal")?.copyTo(walPath, overwrite = true)
-
-            reloadDatabase(context)
-            Log.d("GoogleDriveManager", "Database restored successfully!")
-        } catch (e: Exception) {
-            Log.e("GoogleDriveManager", "Error restoring database files: ${e.message}")
-            throw e
-        }
-    }
-
     private suspend fun uploadFileToDrive(file: File, fileName: String) {
         val existingFileId = findFileOnDrive(fileName)
 
@@ -168,6 +147,27 @@ class GoogleDriveBackupManager {
                 driveService!!.files().create(metadata, fileContent).execute()
             }
             Log.d("GoogleDriveManager", "File $fileName created successfully on Google Drive.")
+        }
+    }
+
+    suspend fun downloadDatabase(context: Context) {
+        if (driveService == null) throw IllegalStateException("Drive service is not initialized.")
+        try {
+            closeDatabase(context)
+
+            val dbPath = context.getDatabasePath("notes_db")
+            val shmPath = context.getDatabasePath("notes_db-shm")
+            val walPath = context.getDatabasePath("notes_db-wal")
+
+            downloadFileFromDrive("notes_db")?.copyTo(dbPath, overwrite = true)
+            downloadFileFromDrive("notes_db-shm")?.copyTo(shmPath, overwrite = true)
+            downloadFileFromDrive("notes_db-wal")?.copyTo(walPath, overwrite = true)
+
+            reloadDatabase(context)
+            Log.d("GoogleDriveManager", "Database restored successfully!")
+        } catch (e: Exception) {
+            Log.e("GoogleDriveManager", "Error restoring database files: ${e.message}")
+            throw e
         }
     }
 

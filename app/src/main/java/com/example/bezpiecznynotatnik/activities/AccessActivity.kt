@@ -7,6 +7,8 @@ import com.example.bezpiecznynotatnik.utils.NavigationController
 import com.example.bezpiecznynotatnik.utils.PreferenceHelper
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
 
 import android.content.Context
 import android.os.Bundle
@@ -34,6 +36,10 @@ class AccessActivity : NavigationController() {
         setContentView(R.layout.activity_access)
         setupNavigationView()
 
+        val topAppBar: AppBarLayout = findViewById(R.id.appBarLayout)
+        val toolbar: MaterialToolbar = findViewById(R.id.topAppBar)
+        setSupportActionBar(toolbar)
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
@@ -41,6 +47,10 @@ class AccessActivity : NavigationController() {
 
         // Link BottomNavigationView with NavController
         bottomNavigationView.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            topAppBar.setExpanded(true, true)
+        }
     }
 
     override fun onStop() {

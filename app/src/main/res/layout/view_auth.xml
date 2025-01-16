@@ -21,13 +21,13 @@
         android:textColor="@color/md_theme_onSurface"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <View
-        android:id="@+id/lineView2"
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/separator_color"
-        android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="12dp"
+        app:dividerInsetStart="16dp"
+        app:dividerInsetEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/password_text_view"/>
 
     <Button
@@ -36,21 +36,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/change_password"
-        app:layout_constraintBottom_toTopOf="@id/biometric_switch"
-        app:layout_constraintTop_toBottomOf="@id/lineView2"
+        app:layout_constraintTop_toBottomOf="@id/divider2"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="VisualLintButtonSize" />
 
-    <View
-        android:id="@+id/lineView3"
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/separator_color"
-        android:layout_marginTop="12dp"
-        android:layout_marginHorizontal="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="12dp"
+        app:dividerInsetStart="16dp"
+        app:dividerInsetEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/changePasswordButton"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/biometric_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,8 +59,9 @@
         android:text="@string/enable_biometric_authentication"
         android:textSize="15sp"
         android:textColor="@color/md_theme_onSurface"
-        app:layout_constraintTop_toBottomOf="@id/changePasswordButton"
+        app:layout_constraintTop_toBottomOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="VisualLintButtonSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
