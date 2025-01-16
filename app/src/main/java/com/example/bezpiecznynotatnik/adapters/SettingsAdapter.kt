@@ -24,6 +24,7 @@ class SettingsAdapter(
     private val onSignInClick: () -> Unit,
     private val onProfileClick: () -> Unit,
     private val onChangePasswordClick: () -> Unit,
+    private val onFeedbackButtonClick: () -> Unit,
     private val onLanguageSelected: (Int) -> Unit,
     private val onApplyLanguageClick: (Int) -> Unit,
     private val onBiometricSwitchToggled: (Boolean) -> Unit,
@@ -35,6 +36,7 @@ class SettingsAdapter(
             SettingType.ACCOUNT -> 0
             SettingType.AUTHENTICATION -> 1
             SettingType.LANGUAGE -> 2
+            SettingType.FEEDBACK -> 3
         }
     }
 
@@ -44,6 +46,7 @@ class SettingsAdapter(
             0 -> AccountViewHolder(inflater.inflate(R.layout.view_account, parent, false))
             1 -> AuthViewHolder(inflater.inflate(R.layout.view_auth, parent, false))
             2 -> LanguageViewHolder(inflater.inflate(R.layout.view_language, parent, false))
+            3 -> FeedbackViewHolder(inflater.inflate(R.layout.view_feedback, parent, false))
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -54,6 +57,7 @@ class SettingsAdapter(
             is AccountViewHolder -> holder.bind(item, onSignInClick, onProfileClick)
             is AuthViewHolder -> holder.bind(item, onChangePasswordClick, onBiometricSwitchToggled)
             is LanguageViewHolder -> holder.bind(item, onLanguageSelected, onApplyLanguageClick)
+            is FeedbackViewHolder -> holder.bind(item, onFeedbackButtonClick)
         }
     }
 
@@ -165,6 +169,17 @@ class SettingsAdapter(
             }
         }
     }
+
+    inner class FeedbackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val feedbackTextView: TextView = itemView.findViewById(R.id.feedback_text_view)
+        private val feedbackButton: Button = itemView.findViewById(R.id.feedback_button)
+
+        fun bind(settingItem: SettingItem,
+                 onFeedbackButtonClick: () -> Unit) {
+            feedbackTextView.text = settingItem.title
+            feedbackButton.text = settingItem.buttonLabel
+        }
+    }
 }
 data class SettingItem(
     val type: SettingType,
@@ -181,5 +196,5 @@ data class SettingItem(
 )
 
 enum class SettingType {
-    ACCOUNT, AUTHENTICATION, LANGUAGE
+    ACCOUNT, AUTHENTICATION, LANGUAGE, FEEDBACK
 }

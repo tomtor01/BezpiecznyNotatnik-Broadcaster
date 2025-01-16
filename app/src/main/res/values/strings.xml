@@ -55,11 +55,13 @@
     <string name="import_notes">Import</string>
     <string name="export_notes">Export</string>
     <string name="profile_picture" translatable="false">profile_picture</string>
-    <string name="authentication_settings">Authentication settings</string>
+    <string name="authentication_settings">Security and privacy</string>
     <string name="error_decrypting_note">Cannot decrypt the note!</string>
     <string name="language_already_set">The selected language is already in use.</string>
     <string name="enable_biometric_authentication">Enable fingerprint authentication</string>
     <string name="key_invalidated">Biometric key has been invalidated. Enter your password to regenerate it.</string>
+    <string name="feedback">Feedback</string>
+    <string name="send_feedback">Send feedback</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

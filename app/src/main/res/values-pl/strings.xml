@@ -54,11 +54,13 @@
     <string name="sign_out">Wyloguj się</string>
     <string name="import_notes">Importuj</string>
     <string name="export_notes">Eksportuj</string>
-    <string name="authentication_settings">Uwierzytelnianie</string>
+    <string name="authentication_settings">Bezpieczeństwo i prywatność</string>
     <string name="error_decrypting_note">Nie można odszyfrować notatki!</string>
     <string name="language_already_set">Ten język jest już ustawiony.</string>
     <string name="enable_biometric_authentication">Włącz uwierzytelnianie biometryczne</string>
     <string name="key_invalidated">Klucz biometryczny unieważniony. Wpisz hasło aby wygenerować nowy klucz.</string>
+    <string name="feedback">Feedback</string>
+    <string name="send_feedback">Wyślij feedback</string>
     <string-array name="language_names">
         <item>English</item>
         <item>Polski</item>

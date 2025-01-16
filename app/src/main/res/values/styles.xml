@@ -45,6 +45,9 @@
         <item name="colorSurfaceDim">@color/md_theme_surfaceDim</item>
         <item name="colorSurfaceBright">@color/md_theme_surfaceBright</item>
         <item name="colorSurfaceContainer">@color/md_theme_background</item>          <!-- label and navigation view color -->
+        <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_background</item>
+
     </style>
 
     <style name="AppTheme.Dialog" parent="Theme.Material3.Light.Dialog.Alert">

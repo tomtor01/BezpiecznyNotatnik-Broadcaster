@@ -70,6 +70,11 @@ class SettingsFragment : Fragment() {
                 type = SettingType.LANGUAGE,
                 title = getString(R.string.choose_language),
                 languageOptions = resources.getStringArray(R.array.language_names).toList()
+            ),
+            SettingItem(
+                type = SettingType.FEEDBACK,
+                title = getString(R.string.feedback),
+                buttonLabel = getString(R.string.send_feedback)
             )
         )
         val adapter = SettingsAdapter(
@@ -77,6 +82,7 @@ class SettingsFragment : Fragment() {
             onSignInClick = { signInLauncher.launch(googleDriveManager.getSignInIntent()) },
             onProfileClick = { findNavController().navigate(R.id.action_settings_to_account, null, navOptions) },
             onChangePasswordClick = { showChangePasswordDialog() },
+            onFeedbackButtonClick = { },
             onLanguageSelected = { index -> selectedLanguageIndex = index },
             onApplyLanguageClick = { index -> applySelectedLanguage(index) },
             onBiometricSwitchToggled = { isEnabled -> toggleBiometricAuthentication(isEnabled) },
