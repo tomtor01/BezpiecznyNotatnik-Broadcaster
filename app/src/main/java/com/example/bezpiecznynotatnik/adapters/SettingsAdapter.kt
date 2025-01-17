@@ -17,14 +17,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsAdapter(
     private val settings: List<SettingItem>,
     private val onSignInClick: () -> Unit,
     private val onProfileClick: () -> Unit,
     private val onChangePasswordClick: () -> Unit,
-    private val onFeedbackButtonClick: () -> Unit,
     private val onLanguageSelected: (Int) -> Unit,
     private val onApplyLanguageClick: (Int) -> Unit,
     private val onBiometricSwitchToggled: (Boolean) -> Unit,
@@ -57,7 +55,7 @@ class SettingsAdapter(
             is AccountViewHolder -> holder.bind(item, onSignInClick, onProfileClick)
             is AuthViewHolder -> holder.bind(item, onChangePasswordClick, onBiometricSwitchToggled)
             is LanguageViewHolder -> holder.bind(item, onLanguageSelected, onApplyLanguageClick)
-            is FeedbackViewHolder -> holder.bind(item, onFeedbackButtonClick)
+            is FeedbackViewHolder -> holder.bind(item)
         }
     }
 
@@ -174,8 +172,7 @@ class SettingsAdapter(
         private val feedbackTextView: TextView = itemView.findViewById(R.id.feedback_text_view)
         private val feedbackButton: Button = itemView.findViewById(R.id.feedback_button)
 
-        fun bind(settingItem: SettingItem,
-                 onFeedbackButtonClick: () -> Unit) {
+        fun bind(settingItem: SettingItem) {
             feedbackTextView.text = settingItem.title
             feedbackButton.text = settingItem.buttonLabel
         }

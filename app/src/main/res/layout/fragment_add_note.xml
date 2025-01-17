@@ -25,6 +25,53 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Action"
+        app:layout_constraintBottom_toBottomOf="@id/messageInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add_note" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fab1Container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/fab"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/fabOption1Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="@drawable/primary_layer"
+            android:text="Add contacts"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/md_theme_onSurface"
+            app:layout_constraintEnd_toStartOf="@id/fabOption1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabOption1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:contentDescription="TODO"
+            app:srcCompat="@drawable/ic_contacts"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"

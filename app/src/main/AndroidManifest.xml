@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:name=".SecureNotesApp"
@@ -26,5 +27,13 @@
         <activity android:name=".activities.AccessActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activities.PasswordSetupActivity" />
+
+        <receiver
+            android:name=".RequestBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.noaaweatherapp.ACTION_REQUEST" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

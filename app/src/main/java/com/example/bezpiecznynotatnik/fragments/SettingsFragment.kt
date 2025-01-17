@@ -82,7 +82,6 @@ class SettingsFragment : Fragment() {
             onSignInClick = { signInLauncher.launch(googleDriveManager.getSignInIntent()) },
             onProfileClick = { findNavController().navigate(R.id.action_settings_to_account, null, navOptions) },
             onChangePasswordClick = { showChangePasswordDialog() },
-            onFeedbackButtonClick = { },
             onLanguageSelected = { index -> selectedLanguageIndex = index },
             onApplyLanguageClick = { index -> applySelectedLanguage(index) },
             onBiometricSwitchToggled = { isEnabled -> toggleBiometricAuthentication(isEnabled) },
@@ -93,7 +92,7 @@ class SettingsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        initializeLanguageSelection(settingsList.last())
+        initializeLanguageSelection(settingsList.component3())
     }
 
     private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

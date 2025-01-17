@@ -44,7 +44,7 @@ class NotesFragment : Fragment() {
 
     private fun loadNotes() {
         lifecycleScope.launch {
-            val notes = noteDao.getAllNotes()
+            val notes = noteDao.getAllNotes().sortedByDescending { it.id }
 
             val decryptedNotes = notes.map { note ->
                 try {
